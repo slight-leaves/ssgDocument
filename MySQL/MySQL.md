@@ -18,6 +18,8 @@
 > * [<font color="violet">第09章_子查询.pdf</font>](./相关资料/第09章_子查询.pdf)
 > * [<font color="violet">第10章_创建和管理表.pdf</font>](./相关资料/第10章_创建和管理表.pdf)
 > * [<font color="violet">第11章_数据处理之增删改.pdf</font>](./相关资料/第11章_数据处理之增删改.pdf)
+> * [<font color="violet">第12章_MySQL数据类型精讲.pdf</font>](./相关资料/第12章_MySQL数据类型精讲.pdf)
+> * [<font color="violet">第13章_约束.pdf</font>](./相关资料/第13章_约束.pdf)
 
 ## 数据库概述
 
@@ -615,23 +617,25 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 >   * 如果等号两边的值、字符串或表达式中有一个为NULL，则比较结果为NULL。
 >
 >   * ```mysql
->    mysql> SELECT 1 = 1, 1 = '1', 1 = 0, 'a' = 'a', (5 + 3) = (2 + 6), '' = NULL , NULL =
->    NULL;
->    +-------+---------+-------+-----------+-------------------+-----------+-------------+
->    | 1 = 1 | 1 = '1' | 1 = 0 | 'a' = 'a' | (5 + 3) = (2 + 6) | '' = NULL | NULL = NULL |
->    +-------+---------+-------+-----------+-------------------+-----------+-------------+
->   	 | 1 	| 1 	| 0		 | 1 		| 1 			| NULL 		| NULL 	|
->    +-------+---------+-------+-----------+-------------------+-----------+-------------+
->    1 row in set (0.00 sec)
->    ```
->  ```
+>     mysql> SELECT 1 = 1, 1 = '1', 1 = 0, 'a' = 'a', (5 + 3) = (2 + 6), '' = NULL , NULL =
+>     NULL;
+>     +-------+---------+-------+-----------+-------------------+-----------+-------------+
+>     | 1 = 1 | 1 = '1' | 1 = 0 | 'a' = 'a' | (5 + 3) = (2 + 6) | '' = NULL | NULL = NULL |
+>     +-------+---------+-------+-----------+-------------------+-----------+-------------+
+>      | 1 	| 1 	| 0		 | 1 		| 1 			| NULL 		| NULL 	|
+>     +-------+---------+-------+-----------+-------------------+-----------+-------------+
+>     1 row in set (0.00 sec)
+>     ```
+> ```
 > 
->  ```
+> ```
 >
 > ```
 > 
 > ```
 >
+> ```
+> 
 > mysql> SELECT 1 = 2, 0 = 'abc', 1 = 'abc' FROM dual;
 > +-------+-----------+-----------+
 > | 1 = 2 | 0 = 'abc' | 1 = 'abc' |
@@ -640,36 +644,38 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 > +-------+-----------+-----------+
 > 1 row in set, 2 warnings (0.00 sec)
 > ```
+>
 > 
-> 
-> 
+>
 > ==安全等于运算符==
-> 
+>
 > * 与=并无多大区别，主要用于处理null值
-> 
+>
 > * ```mysql
-> mysql> SELECT 1 <=> NULL, NULL <=> NULL FROM DUAL;
-> +------------+---------------+
-> | 1 <=> NULL | NULL <=> NULL |
-> +------------+---------------+
-> |          0 |             1 |
-> +------------+---------------+
-> 1 row in set (0.00 sec)
-> ```
+>   mysql> SELECT 1 <=> NULL, NULL <=> NULL FROM DUAL;
+>   +------------+---------------+
+>   | 1 <=> NULL | NULL <=> NULL |
+>   +------------+---------------+
+>   |          0 |             1 |
+>   +------------+---------------+
+>   1 row in set (0.00 sec)
+>   ```
 > ```
 > 
-> 
+> ```
+>
+>
 > #练习：查询表中commission_pct为null的数据有哪些
 > SELECT last_name,salary,commission_pct
 > FROM employees
 > WHERE commission_pct <=> NULL;
 > ```
->
 > 
->
+> 
+> 
 > ==非符号运算符==
->
-> ```mysql
+> 
+> ​```mysql
 > #① IS NULL \ IS NOT NULL \ ISNULL
 > #练习：查询表中commission_pct为null的数据有哪些
 > SELECT last_name,salary,commission_pct
@@ -2987,6 +2993,1177 @@ WHERE department_id = 50;
 
 
 
+## 数据类型
+
+> 阿里开发手册
+>
+> 【 强制 】小数类型为 DECIMAL，禁止使用 FLOAT 和 DOUBLE。
+> 【 强制 】如果存储的字符串长度几乎相等，使用 CHAR 定长字符串类型。
+> 【 强制 】VARCHAR 是可变长字符串，不预先分配存储空间，长度不要超过 5000。如果存储长度大于此值，定义字段类型为 TEXT，独立出来一张表，用主键来对应，避免影响其它字段索引效率。
+
+### MySQL中的数据类型
+
+| **类型**         | **类型举例**                                                 |
+| ---------------- | ------------------------------------------------------------ |
+| 整数类型         | TINYINT、SMALLINT、MEDIUMINT、INT(或INTEGER)、BIGINT         |
+| 浮点类型         | FLOAT、DOUBLE                                                |
+| 定点数类型       | DECIMAL                                                      |
+| 位类型           | BIT                                                          |
+| 日期时间类型     | YEAR、TIME、DATE、DATETIME、TIMESTAMP                        |
+| 文本字符串类型   | CHAR、VARCHAR、TINYTEXT、TEXT、MEDIUMTEXT、LONGTEXT          |
+| 枚举类型         | ENUM                                                         |
+| 集合类型         | SET                                                          |
+| 二进制字符串类型 | BINARY、VARBINARY、TINYBLOB、BLOB、MEDIUMBLOB、LONGBLOB      |
+| JSON类型         | JSON对象、JSON数组                                           |
+| 空间数据类型     | 单值类型：GEOMETRY、POINT、LINESTRING、POLYGON；   集合类型：MULTIPOINT、MULTILINESTRING、MULTIPOLYGON、   GEOMETRYCOLLECTION |
+
+常见数据类型的属性，如下：
+
+| **MySQL关键字**    | **含义**                 |
+| ------------------ | ------------------------ |
+| NULL               | 数据列可包含NULL值       |
+| NOT NULL           | 数据列不允许包含NULL值   |
+| DEFAULT            | 默认值                   |
+| PRIMARY KEY        | 主键                     |
+| AUTO_INCREMENT     | 自动递增，适用于整数类型 |
+| UNSIGNED           | 无符号                   |
+| CHARACTER SET name | 指定一个字符集           |
+
+
+
+### 字符集设置(建表时)
+
+> ```mysql
+> #1.关于属性：character set name
+> 
+> SHOW VARIABLES LIKE 'character_%';		#相关配置在my.ini中
+> 
+> #创建数据库时指名字符集
+> CREATE DATABASE IF NOT EXISTS dbtest12 CHARACTER SET 'utf8';
+> 
+> SHOW CREATE DATABASE dbtest12;
+> 
+> #创建表的时候，指名表的字符集
+> CREATE TABLE temp
+> (
+>     id INT
+> ) CHARACTER SET 'utf8';
+> 
+> SHOW CREATE TABLE temp;
+> 
+> #创建表，指名表中的字段时，可以指定字段的字符集
+> CREATE TABLE temp1
+> (
+>     id   INT,
+>     NAME VARCHAR(15) CHARACTER SET 'gbk'
+> 
+> );
+> SHOW CREATE TABLE temp1;
+> ```
+>
+> 
+
+### 整数类型
+
+| **整数类型** | **字节** | **有符号数取值范围**                     | **无符号数取值范围**   |
+| ------------ | -------- | ---------------------------------------- | ---------------------- |
+| TINYINT      | 1        | -128~127                                 | 0~255                  |
+| SMALLINT     | 2        | -32768~32767                             | 0~65535                |
+| MEDIUMINT    | 3        | -8388608~8388607                         | 0~16777215             |
+| INT、INTEGER | 4        | -2147483648~2147483647                   | 0~4294967295           |
+| BIGINT       | 8        | -9223372036854775808~9223372036854775807 | 0~18446744073709551615 |
+
+>
+> 注意：==从MySQL 8.0.17开始，整数数据类型不推荐使用显示宽度属性==。
+>
+> 如`INT(5)`，我们不推荐这样写。
+>
+> ==显示宽度与类型可以存储的值范围无关==
+>
+> ```mysql
+> #2.整型数据类型
+> 
+> USE dbtest12;
+> 
+> CREATE TABLE test_int1
+> (
+>     f1 TINYINT,
+>     f2 SMALLINT,
+>     f3 MEDIUMINT,
+>     f4 INTEGER,
+>     f5 BIGINT
+> );
+> 
+> DESC test_int1;
+> 
+> INSERT INTO test_int1(f1)
+> VALUES (12),
+>        (-12),
+>        (-128),
+>        (127);
+> 
+> SELECT *
+> FROM test_int1;
+> 
+> #Out of range value for column 'f1' at row 1
+> INSERT INTO test_int1(f1)
+> VALUES (128);
+> 
+> CREATE TABLE test_int2
+> (
+>     f1 INT,
+>     f2 INT(5),		#仅仅这样写没意义，要配合ZEROFULL使用
+>     f3 INT(5) ZEROFILL #① 显示宽度为5。当insert的值不足5位时，使用0填充。 ②当使用ZEROFILL时，自动会添加UNSIGNED
+> 	#超过5位也没有关系，可以正常插入
+> );
+> 
+> INSERT INTO test_int2(f1, f2)
+> VALUES (123, 123),
+>        (123456, 123456);
+> 
+> SELECT *
+> FROM test_int2;
+> 
+> INSERT INTO test_int2(f3)
+> VALUES (123),
+>        (123456);
+> 
+> SHOW CREATE TABLE test_int2;
+> 
+> 
+> CREATE TABLE test_int3
+> (
+>     f1 INT UNSIGNED		#无符号类型
+> );
+> 
+> DESC test_int3;
+> 
+> INSERT INTO test_int3
+> VALUES (2412321);
+> 
+> #Out of range value for column 'f1' at row 1
+> INSERT INTO test_int3
+> VALUES (4294967296);
+> ```
+>
+> 
+
+
+
+### 浮点类型
+
+![1697213078017](MySQL.assets/1697213078017.png)
+
+> ==由于表示的范围一样，不建议在浮点数上用unsigned==。
+>
+> `FLOAT(M,D)` 或 `DOUBLE(M,D)` 。这里，`M称为 精度` ，`D称为 标度` 。(M,D)中 M=整数位+小数位，D=小数位。 D<=M<=255，0<=D<=30。
+>
+> ==从MySQL 8.0.17开始，FLOAT(M,D) 和DOUBLE(M,D)用法在官方文档中已经明确不推荐使用==
+>
+> 浮点型FLOAT和DOUBLE的UNSIGNED也不推荐使用了
+>
+> ```mysql
+> #3.浮点类型
+> CREATE TABLE test_double1
+> (
+>     f1 FLOAT,
+>     f2 FLOAT(5, 2),
+>     f3 DOUBLE,
+>     f4 DOUBLE(5, 2)
+> );
+> 
+> DESC test_double1;
+> 
+> INSERT INTO test_double1(f1, f2)
+> VALUES (123.45, 123.45);
+> 
+> SELECT *
+> FROM test_double1;
+> 
+> INSERT INTO test_double1(f3, f4)
+> VALUES (123.45, 123.456);	#123.45     123.46
+> #存在四舍五入
+> 
+> #Out of range value for column 'f4' at row 1
+> INSERT INTO test_double1(f3, f4)
+> VALUES (123.45, 1234.456);
+> 
+> #Out of range value for column 'f4' at row 1
+> INSERT INTO test_double1(f3, f4)
+> VALUES (123.45, 999.995);
+> 
+> #测试FLOAT和DOUBLE的精度问题
+> CREATE TABLE test_double2
+> (
+>     f1 DOUBLE
+> );
+> 
+> INSERT INTO test_double2
+> VALUES (0.47),
+>        (0.44),
+>        (0.19);
+> 
+> SELECT SUM(f1)
+> FROM test_double2;
+> 
+> SELECT SUM(f1) = 1.1, 1.1 = 1.1		# 0              1
+> FROM test_double2;
+> ```
+>
+> 
+
+### 定点数类型(DECIMAL)
+
+| **数据类型**             | **字节数** | **含义**           |
+| ------------------------ | ---------- | ------------------ |
+| DECIMAL(M,D),DEC,NUMERIC | M+2字节    | 有效范围由M和D决定 |
+
+> DECIMAL(M,D) 
+>
+> M被称为精度，D被称为标度。0<=M<=65，0<=D<=30，D<M
+>
+> ==DECIMAL(M,D)的最大取值范围与DOUBLE类型一样==
+>
+> ==定点数在MySQL内部是以字符串形式存储，保证了精度==
+>
+> 默认为DECIMAL(10,0)
+>
+> ```mysql
+> #4. 定点数类型
+> CREATE TABLE test_decimal1
+> (
+>     f1 DECIMAL,
+>     f2 DECIMAL(5, 2)
+> );
+> 
+> DESC test_decimal1;
+> 
+> INSERT INTO test_decimal1(f1)
+> VALUES (123),   #123
+>        (123.45);    #123
+> 
+> SELECT *
+> FROM test_decimal1;
+> 
+> INSERT INTO test_decimal1(f2)
+> VALUES (999.99);
+> 
+> INSERT INTO test_decimal1(f2)
+> VALUES (67.567);    #67.57
+> #存在四舍五入
+> 
+> #Out of range value for column 'f2' at row 1
+> INSERT INTO test_decimal1(f2)
+> VALUES (1267.567);
+> 
+> #Out of range value for column 'f2' at row 1
+> INSERT INTO test_decimal1(f2)
+> VALUES (999.995);
+> 
+> #演示DECIMAL替换DOUBLE，体现精度
+> ALTER TABLE test_double2
+>     MODIFY f1 DECIMAL(5, 2);
+> 
+> DESC test_double2;
+> 
+> SELECT SUM(f1)
+> FROM test_double2;
+> 
+> SELECT SUM(f1) = 1.1, 1.1 = 1.1		#1     1
+> FROM test_double2;
+> ```
+>
+> 
+
+### 位类型（BIT）
+
+| **二进制字符串类型** | **长度** | **长度范围**   | **占用空间**        |
+| -------------------- | -------- | -------------- | ------------------- |
+| BIT(M)               | M        | 1 <=   M <= 64 | 约为(M + 7)/8个字节 |
+
+> 默认M是1位
+>
+> (M)是表示二进制的位数，位数最小值为1，最大值为64
+>
+> SELECT展示表，结果是以十六进制展示
+>
+> ```mysql
+> #5. 位类型：BIT
+> CREATE TABLE test_bit1
+> (
+>     f1 BIT,
+>     f2 BIT(5),
+>     f3 BIT(64)
+> );
+> 
+> DESC test_bit1;
+> 
+> INSERT INTO test_bit1(f1)
+> VALUES (0),
+>        (1);
+> 
+> SELECT *
+> FROM test_bit1;
+> 
+> #Data too long for column 'f1' at row 1
+> INSERT INTO test_bit1(f1)
+> VALUES (2);
+> 
+> INSERT INTO test_bit1(f2)
+> VALUES (31);
+> 
+> #Data too long for column 'f2' at row 1
+> INSERT INTO test_bit1(f2)
+> VALUES (32);
+> 
+> SELECT BIN(f1), BIN(f2), HEX(f1), HEX(f2)	#用二进制、十六进制展示
+> FROM test_bit1;
+> 
+> #此时+0以后，可以以十进制的方式显示数据
+> SELECT f1 + 0, f2 + 0
+> FROM test_bit1;
+> ```
+>
+> 
+
+### 日期与时间类型
+
+| **类型**  | **名称** | **字节** | **日期格式**        | **最小值**                | **最大值**               |
+| --------- | -------- | -------- | ------------------- | ------------------------- | ------------------------ |
+| YEAR      | 年       | 1        | YYYY或YY            | 1901                      | 2155                     |
+| TIME      | 时间     | 3        | HH:MM:SS            | -838:59:59                | 838:59:59                |
+| DATE      | 日期     | 3        | YYYY-MM-DD          | 1000-01-01                | 9999-12-03               |
+| DATETIME  | 日期时间 | 8        | YYYY-MM-DD HH:MM:SS | 1000-01-01   00:00:00     | 9999-12-31   23:59:59    |
+| TIMESTAMP | 日期时间 | 4        | YYYY-MM-DD HH:MM:SS | 1970-01-01   00:00:00 UTC | 2038-01-19   03:14:07UTC |
+
+> 为什么时间类型 TIME 的取值范围不是 -23:59:59～23:59:59 呢？
+> 	原因是 MySQL 设计的 TIME 类型，不光表示一天之内的时间，而且可以用来表示一个时间间隔，这个时间间隔可以超过 24 小时。
+
+#### YEAR
+
+> 只需要 1个字节 的存储空间
+>
+> 以4位字符串或数字格式表示YEAR类型，其格式为YYYY，最小值为1901，最大值为2155。
+>
+> 以2位字符串格式表示YEAR类型，最小值为00，最大值为99。
+> 	当取值为01到69时，表示2001到2069；
+> 	当取值为70到99时，表示1970到1999；
+> 	当取值整数的0或00添加的话，那么是0000年；
+> 	当取值是日期/字符串的'0'添加的话，是2000年。
+>
+> ==从MySQL5.5.27开始，2位格式的YEAR已经不推荐使用==。YEAR默认格式就是“YYYY”，没必要写成YEAR(4)，
+> 从MySQL 8.0.19开始，不推荐使用指定显示宽度的YEAR(4)数据类型。
+>
+> ```mysql
+> #6.1 YEAR类型
+> CREATE TABLE test_year
+> (
+>     f1 YEAR,
+>     f2 YEAR(4)
+> );
+> 
+> DESC test_year;
+> 
+> INSERT INTO test_year(f1)
+> VALUES ('2021'),
+>        (2022);
+> 
+> SELECT *
+> FROM test_year;
+> 
+> INSERT INTO test_year(f1)
+> VALUES ('2155');
+> 
+> #Out of range value for column 'f1' at row 1
+> INSERT INTO test_year(f1)
+> VALUES ('2156');
+> 
+> INSERT INTO test_year(f1)
+> VALUES ('69'),  #2069
+>        ('70');  #1970
+> 
+> INSERT INTO test_year(f1)
+> VALUES (0),     #0
+>        ('00');  #2000
+> ```
+>
+> 
+
+#### DATE
+
+> 需要 3个字节 的存储空间。
+>
+> 插入数据时可用的格式：
+> 	以 YYYY-MM-DD 格式或者 YYYYMMDD 格式表示的字符串日期，其最小取值为1000-01-01，最大取值为9999-12-03。YYYYMMDD格式会被转化为YYYY-MM-DD格式。
+> 	以 YY-MM-DD 格式或者 YYMMDD 格式表示的字符串日期，此格式中，年份为两位数值或字符串满足YEAR类型的格式条件为：当年份取值为00到69时，会被转化为2000到2069；当年份取值为70到99时，会被转化为1970到1999。
+> 	使用 CURRENT_DATE() 或者 NOW() 函数，会插入当前系统的日期。
+>
+> ```mysql
+> CREATE TABLE test_date1
+> (
+>     f1 DATE
+> );
+> 
+> DESC test_date1;
+> 
+> INSERT INTO test_date1
+> VALUES ('2020-10-01'),
+>        ('20201001'),
+>        (20201001);
+> 
+> INSERT INTO test_date1
+> VALUES ('00-01-01'),
+>        ('000101'),
+>        ('69-10-01'),
+>        ('691001'),
+>        ('70-01-01'),
+>        ('700101'),
+>        ('99-01-01'),
+>        ('990101');
+> 
+> INSERT INTO test_date1
+> VALUES (000301), #2000-03-01
+>        (690301), #2069-03-01
+>        (700301), #1970-03-01
+>        (990301); #1999-03-01       #存在隐式转换
+> 
+> INSERT INTO test_date1
+> VALUES (CURDATE()),
+>        (CURRENT_DATE()),
+>        (NOW());
+> 
+> SELECT *
+> FROM test_date1;
+> ```
+>
+> 
+
+#### TIME
+
+> 需要 3个字节 的存储空间
+>
+> 插入数据时可以用的格式
+> **（1）可以使用带有冒号的字符串。**
+> 		比如' `D HH:MM:SS`' 、' `HH:MM:SS` '、' `HH:MM` '、' `D HH:MM `'、' `D HH `'或' `SS `'格式，都能被正确地插入TIME类型的字段中。其中D表示天，其最小值为0，最大值为34。如果使用带有D格式的字符串插入TIME类型的字段时，D会被转化为小时，计算格式为D*24+HH。当使用带有冒号并且不带D的字符串表示时间时，表示当天的时间，比如12:10表示12:10:00，而不是00:12:10。
+> **（2）可以使用不带有冒号的字符串或者数字。**
+> 		可以使用不带有冒号的字符串或者数字，格式为' `HHMMSS` '或者 `HHMMSS` 。如果插入一个不合法的字符串或者数字，MySQL在存储数据时，会将其自动转化为00:00:00进行存储。比如1210，MySQL会将最右边的两位解析成秒，表示00:12:10，而不是12:10:00。
+> **（3）使用 CURRENT_TIME() 或者 NOW() ，会插入当前系统的时间。**
+>
+> 
+>
+> ```mysql
+> #6.3 TIME类型
+> CREATE TABLE test_time1
+> (
+>     f1 TIME
+> );
+> 
+> DESC test_time1;
+> 
+> INSERT INTO test_time1
+> VALUES ('2 12:30:29'),
+>        ('12:35:29'),
+>        ('12:40'),
+>        ('2 12:40'),
+>        ('1 05'),
+>        ('45');
+> 
+> INSERT INTO test_time1
+> VALUES ('123520'),
+>        (124011),
+>        (1210);
+> 
+> INSERT INTO test_time1
+> VALUES (NOW()),
+>        (CURRENT_TIME()),
+>        (CURTIME());
+> 
+> SELECT *
+> FROM test_time1;
+> ```
+>
+> 
+
+#### DATETIME
+
+> 需要 8 个字节的存储空间
+>
+> 插入数据时可以用的格式
+> （1）以 `YYYY-MM-DD HH:MM:SS` 格式或者 `YYYYMMDDHHMMSS` 格式的字符串插入DATETIME类型的字段时，最小值为1000-01-01 00:00:00，最大值为9999-12-03 23:59:59。
+> 		以YYYYMMDDHHMMSS格式的数字插入DATETIME类型的字段时，会被转化为YYYY-MM-DDHH:MM:SS格式。
+>
+> （2）以 `YY-MM-DD HH:MM:SS` 格式或者 `YYMMDDHHMMSS` 格式的字符串插入DATETIME类型的字段时，两位数的年份规则符合YEAR类型的规则，00到69表示2000到2069；70到99表示1970到1999。
+>
+> （3）使用 CURRENT_TIME() 或者 NOW() ，会插入当前系统的时间。
+>
+> ```mysql
+> #6.4 DATETIME类型
+> CREATE TABLE test_datetime1
+> (
+>     dt DATETIME
+> );
+> 
+> INSERT INTO test_datetime1
+> VALUES ('2021-01-01 06:50:30'),
+>        ('20210101065030');
+> 
+> INSERT INTO test_datetime1
+> VALUES ('99-01-01 00:00:00'),
+>        ('990101000000'),
+>        ('20-01-01 00:00:00'),
+>        ('200101000000');
+> 
+> INSERT INTO test_datetime1
+> VALUES (20200101000000),
+>        (200101000000),
+>        (19990101000000),
+>        (990101000000);
+> 
+> INSERT INTO test_datetime1
+> VALUES (CURRENT_TIMESTAMP()),
+>        (NOW()),
+>        (SYSDATE());
+> 
+> SELECT *
+> FROM test_datetime1;
+> ```
+>
+> 
+
+#### TIMESTAMP
+
+> 需要4个字节的存储空间
+>
+> 只能存储“1970-01-01 00:00:01 UTC”到“2038-01-19 03:14:07 UTC”之间的时间。UTC表示世界统一时间。
+>
+> 注：UTC比咱的时间少八个小时。在插入的时候会自动转换为对应的UTC，显示的是又从UTC转换为咱的时区。
+>
+> ```mysql
+> #6.5 TIMESTAMP类型
+> CREATE TABLE test_timestamp1
+> (
+>     ts TIMESTAMP
+> );
+> 
+> INSERT INTO test_timestamp1
+> VALUES ('1999-01-01 03:04:50'),
+>        ('19990101030405'),
+>        ('99-01-01 03:04:05'),
+>        ('990101030405');
+> 
+> INSERT INTO test_timestamp1
+> VALUES ('2020@01@01@00@00@00'),
+>        ('20@01@01@00@00@00');
+> 
+> INSERT INTO test_timestamp1
+> VALUES (CURRENT_TIMESTAMP()),
+>        (NOW());
+> 
+> #Incorrect datetime value
+> INSERT INTO test_timestamp1
+> VALUES ('2038-01-20 03:14:07');
+> 
+> SELECT *
+> FROM test_timestamp1;
+> ```
+>
+> 
+
+#### DATETIME与TIMESTAMP的选择
+
+> 尽量用 DATETIME 类型。因为这个数据类型包括了完整的日期和时间信息，取值范围也最大，使用起来比较方便。
+>
+> 此外，一般存注册时间、商品发布时间等，不建议使用DATETIME存储，而是使用 `时间戳 `，因为DATETIME虽然直观，但不便于计算。
+>
+> ```mysql
+> mysql> SELECT UNIX_TIMESTAMP();
+> ```
+>
+> 
+
+
+
+### 文本字符串类型
+
+![1697217746908](MySQL.assets/1697217746908.png)
+
+#### CHAR与VARCHAR
+
+| **字符串**(文本)**类型** | **特点** | **长度** | **长度范围**      | **占用的存储空间**    |
+| ------------------------ | -------- | -------- | ----------------- | --------------------- |
+| CHAR(M)                  | 固定长度 | M        | 0 <=   M <= 255   | M个字节               |
+| VARCHAR(M)               | 可变长度 | M        | 0 <=   M <= 65535 | (实际长度 + 1) 个字节 |
+
+##### CHAR
+
+> CHAR(M)
+>
+> 默认是1个字符。
+>
+> 数据的实际长度比CHAR类型声明的长度小，则会在 右侧填充 空格以达到指定的长度。
+>
+> 当MySQL检索CHAR类型的数据时，CHAR类型的字段会去除尾部的空格。
+>
+> ```mysql
+> #7.1 CHAR类型
+> CREATE TABLE test_char1
+> (
+>     c1 CHAR,
+>     c2 CHAR(5)
+> );
+> 
+> DESC test_char1;
+> 
+> INSERT INTO test_char1(c1)
+> VALUES ('a');
+> 
+> #Data too long for column 'c1' at row 1
+> INSERT INTO test_char1(c1)
+> VALUES ('ab');
+> 
+> INSERT INTO test_char1(c2)
+> VALUES ('ab');
+> 
+> INSERT INTO test_char1(c2)
+> VALUES ('hello');
+> 
+> INSERT INTO test_char1(c2)
+> VALUES ('你');
+> 
+> INSERT INTO test_char1(c2)
+> VALUES ('你好');
+> 
+> INSERT INTO test_char1(c2)
+> VALUES ('你好啊小米');
+> 
+> #Data too long for column 'c2' at row 1
+> INSERT INTO test_char1(c2)
+> VALUES ('你好XI啊小米');
+> 
+> SELECT *
+> FROM test_char1;
+> 
+> SELECT CONCAT(c2, '***')
+> FROM test_char1;
+> 
+> INSERT INTO test_char1(c2)
+> VALUES ('ab  ');	#存的时候会自动去除尾部的空字符串
+> 
+> SELECT CHAR_LENGTH(c2)
+> FROM test_char1;
+> ```
+>
+> 
+
+##### VARCHAR
+
+> VARCHAR(M) 定义时， 必须指定长度M，否则报错。
+>
+> VARCHAR类型的字段所占用的存储空间为字符串实际长度加1个字节。
+>
+> MySQL4.0版本以下，varchar(20)：指的是20字节
+> MySQL5.0版本以上，varchar(20)：指的是20字符。
+>
+> 检索VARCHAR类型的字段数据时，会保留数据尾部的空格。
+>
+> ```mysql
+> #7.2 VARCHAR类型
+> CREATE TABLE test_varchar1
+> (
+>     NAME VARCHAR #错误
+> );
+> 
+> 
+> #Column length too big for column 'name' (max = 21845); use BLOB or TEXT instead
+> CREATE TABLE test_varchar2
+> (
+>     NAME VARCHAR(65535)		#65535/一个字符所占的字节数
+> );
+> 
+> CREATE TABLE test_varchar3
+> (
+>     NAME VARCHAR(5)
+> );
+> 
+> INSERT INTO test_varchar3
+> VALUES ('小米你'),
+>        ('小米你好啊');
+> 
+> #Data too long for column 'NAME' at row 1
+> INSERT INTO test_varchar3
+> VALUES ('你好XI啊小米');
+> ```
+>
+> 
+
+> ​	InnoDB存储引擎，建议使用VARCHAR类型。因为对于InnoDB数据表，==内部的行存储格式并没有区分固定长度和可变长度列==（所有数据行都使用指向数据列值的头指针），而且**主要影响性能的因素是数据行使用的存储总量**，由于char平均占用的空间多于varchar，所以除了简短并且固定长度的，其他考虑varchar。这样节省空间，对磁盘I/O和数据存储总量比较好。
+
+#### TEXT
+
+| **文本字符串类**型 | **特点**           | **长度** | **长度范围**                          | **占用的存储空**间 |
+| ------------------ | ------------------ | -------- | ------------------------------------- | ------------------ |
+| TINYTEXT           | 小文本、可变长度   | L        | 0 <=   L <= 255                       | L + 2 个字节       |
+| TEXT               | 文本、可变长度     | L        | 0 <=   L <= 65535                     | L   + 2 个字节     |
+| MEDIUMTEXT         | 中等文本、可变长度 | L        | 0 <=   L <= 16777215                  | L + 3 个字节       |
+| LONGTEXT           | 大文本、可变长度   | L        | 0 <= L<=   4294967295（相当于   4GB） | L + 4 个字节       |
+
+> **由于实际存储的长度不确定，MySQL 不允许 TEXT 类型的字段做主键**。
+> 遇到这种情况，你只能采用CHAR(M)，或者 
+>
+> text和blob类型的数据删除后容易导致 “空洞”，使得文件碎片比较多，所以频繁使用的表不建议包含TEXT类型字段，建议单独分出去，单独用一个表。
+>
+> ```mysql
+> #7.3 TEXT类型
+> CREATE TABLE test_text
+> (
+>     tx TEXT
+> );
+> 
+> INSERT INTO test_text
+> VALUES ('zfp   ');
+> 
+> SELECT CHAR_LENGTH(tx)
+> FROM test_text;
+> #6
+> ```
+>
+> 
+
+### ENUM类型
+
+| **文本字符串类型** | **长度** | **长度范围**      | **占用的存储空间** |
+| ------------------ | -------- | ----------------- | ------------------ |
+| ENUM               | L        | 1 <=   L <= 65535 | 1或2个字节         |
+
+> ENUM类型只允许从成员中选取单个值，不能一次选取多个值。
+>
+> 当ENUM类型包含1～255个成员时，需要1个字节的存储空间；
+> 当ENUM类型包含256～65535个成员时，需要2个字节的存储空间。
+> ENUM类型的成员个数的上限为65535个。
+>
+> ```mysql
+> INSERT INTO test_enum
+> VALUES ('春'),
+>        ('秋');
+> 
+> SELECT *
+> FROM test_enum;
+> 
+> #Data truncated for column 'season' at row 1
+> INSERT INTO test_enum
+> VALUES ('春,秋');
+> #Data truncated for column 'season' at row 1
+> INSERT INTO test_enum
+> VALUES ('人');
+> 
+> INSERT INTO test_enum
+> VALUES ('unknow');
+> 
+> #忽略大小写的
+> INSERT INTO test_enum
+> VALUES ('UNKNOW');
+> 
+> #可以使用索引进行枚举元素的调用
+> INSERT INTO test_enum
+> VALUES (1),
+>        ('3');
+> 
+> # 没有限制非空的情况下，可以添加null值
+> INSERT INTO test_enum
+> VALUES (NULL);
+> ```
+>
+> 
+
+### SET类型
+
+| **成员个数范围（**L**表示实际成员个数）** | **占用的存储空间** |
+| ----------------------------------------- | ------------------ |
+| 1 <= L <= 8                               | 1个字节            |
+| 9 <= L <= 16                              | 2个字节            |
+| 17 <= L <= 24                             | 3个字节            |
+| 25 <= L <= 32                             | 4个字节            |
+| 33 <= L <= 64                             | 8个字节            |
+
+```mysql
+#9. SET类型
+CREATE TABLE test_set
+(
+    s SET ('A', 'B', 'C')
+);
+
+INSERT INTO test_set (s)
+VALUES ('A'),
+       ('A,B');
+
+#插入重复的SET类型成员时，MySQL会自动删除重复的成员
+INSERT INTO test_set (s)
+VALUES ('A,B,C,A');
+
+#向SET类型的字段插入SET成员中不存在的值时，MySQL会抛出错误。
+INSERT INTO test_set (s)
+VALUES ('A,B,C,D');
+
+SELECT *
+FROM test_set;
+
+
+CREATE TABLE temp_mul
+(
+    gender ENUM ('男','女'),
+    hobby  SET ('吃饭','睡觉','打豆豆','写代码')
+);
+
+INSERT INTO temp_mul
+VALUES ('男', '睡觉,打豆豆');
+
+SELECT *
+FROM temp_mul;
+
+#Data truncated for column 'gender' at row 1
+INSERT INTO temp_mul
+VALUES ('男,女', '睡觉,打豆豆');
+```
+
+
+
+### 二进制字符串类型
+
+> MySQL中的二进制字符串类型主要存储一些二进制数据，比如可以存储图片、音频和视频等二进制数据。
+>
+> MySQL中支持的二进制字符串类型主要包括BINARY、VARBINARY、TINYBLOB、BLOB、MEDIUMBLOB  和LONGBLOB类型
+
+#### BINARY与VARBINARY类型
+
+| **二进制字符串类型** | **特点** | **值的长度**           | **占用空间** |
+| -------------------- | -------- | ---------------------- | ------------ |
+| BINARY(M)            | 固定长度 | M （0 <=   M <= 255）  | M个字节      |
+| VARBINARY(M)         | 可变长度 | M（0 <= M   <= 65535） | M+1个字节    |
+
+> BINARY (M)  如果未指定(M)，表示只能存储 1个字节
+> 如果字段值不足(M)个字节，将在右边填充'\0'以补齐指定长度。
+>
+> VARBINARY类型 必须指定(M) ，否则报错。
+
+#### BLOB类型
+
+> BLOB是一个 二进制大对象 ，可以容纳可变数量的数据。
+>
+> ​	需要注意的是，在实际工作中，往往不会在MySQL数据库中使用BLOB类型存储大对象数据，通常会将图片、音频和视频文件存储到      ，并将图片、音频和视频的==访问路径存储到MySQL中==。
+
+| **二进制字符串类型** | **值的长度** | **长度范围**                        | **占用空间** |
+| -------------------- | ------------ | ----------------------------------- | ------------ |
+| TINYBLOB             | L            | 0 <=   L <= 255                     | L + 1 个字节 |
+| BLOB                 | L            | 0 <= L   <= 65535（相当于64KB）     | L + 2 个字节 |
+| MEDIUMBLOB           | L            | 0 <= L <= 16777215 （相当于16MB）   | L + 3 个字节 |
+| LONGBLOB             | L            | 0 <= L   <= 4294967295（相当于4GB） | L + 4 个字节 |
+
+### JSON类型
+
+```mysql
+#11. JSON类型
+CREATE TABLE test_json
+(
+    js json
+
+);
+
+INSERT INTO test_json (js)
+VALUES ('{
+  "name": "songhk",
+  "age": 18,
+  "address": {
+    "province": "beijing",
+    "city": "beijing"
+  }
+}');
+
+
+SELECT *
+FROM test_json;
+
+SELECT js -> '$.name'             AS NAME,
+       js -> '$.age'              AS age,
+       js -> '$.address.province' AS province,
+       js -> '$.address.city'     AS city
+FROM test_json;
+```
+
+
+
+## 约束
+
+### 约束概述
+
+> SQL规范以约束的方式对表数据进行额外的条件限制。从以下四个方面考虑：
+>
+> 实体完整性（Entity Integrity） ：例如，同一个表中，不能存在两条完全相同无法区分的记录
+> 域完整性（Domain Integrity） ：例如：年龄范围0-120，性别范围“男/女”
+> 引用完整性（Referential Integrity） ：例如：员工所在部门，在部门表中要能找到这个部门
+> 用户自定义完整性（User-defined Integrity） ：例如：用户名唯一、密码不能为空等，本部门经理的工资不得高于本部门职工的平均工资的5倍。
+
+> 约束的分类
+>
+> 角度1：约束的字段的个数
+> 单列约束 vs 多列约束
+>
+> 角度2：约束的作用范围
+> 列级约束：将此约束声明在对应字段的后面
+> 表级约束：在表中所有字段都声明完，在所有字段的后面声明的约束
+>
+> 角度3：约束的作用（或功能）
+> ① not null (非空约束)
+> ② unique  (唯一性约束)
+> ③ primary key (主键约束)
+> ④ foreign key (外键约束)
+> ⑤ check (检查约束)
+> ⑥ default (默认值约束)
+
+#### 如何添加/删除约束
+
+```mysql
+CREATE TABLE时添加约束
+
+ALTER TABLE 时增加约束、删除约束
+```
+
+#### 如何查看表中的约束
+
+```mysql
+SELECT *
+FROM information_schema.table_constraints
+WHERE table_name = 'test1';
+```
+
+### 非空约束
+
+> 默认，所有的类型的值都可以是NULL，包括INT、FLOAT等数据类型
+> 非空约束只能出现在表对象的列上，只能某个列单独限定非空，不能组合非空
+
+```mysql
+#3. not null (非空约束)
+#3.1 在CREATE TABLE时添加约束
+
+CREATE TABLE test1
+(
+    id        INT         NOT NULL,
+    last_name VARCHAR(15) NOT NULL,
+    email     VARCHAR(25),
+    salary    DECIMAL(10, 2)
+
+);
+
+DESC test1;
+
+INSERT INTO test1(id, last_name, email, salary)
+VALUES (1, 'Tom', 'tom@126.com', 3400);
+
+#错误：Column 'last_name' cannot be null
+INSERT INTO test1(id, last_name, email, salary)
+VALUES (2, NULL, 'tom1@126.com', 3400);
+
+#错误：Column 'id' cannot be null
+INSERT INTO test1(id, last_name, email, salary)
+VALUES (NULL, 'Jerry', 'jerry@126.com', 3400);
+
+INSERT INTO test1(id, email)
+VALUES (2, 'abc@126.com');
+
+UPDATE test1
+SET last_name = NULL
+WHERE id = 1;
+
+UPDATE test1
+SET email = 'tom@126.com'
+WHERE id = 1;
+
+#3.2 在ALTER TABLE时添加约束
+SELECT *
+FROM test1;
+
+DESC test1;
+
+ALTER TABLE test1
+    MODIFY email VARCHAR(25) NOT NULL;
+
+#3.3 在ALTER TABLE时删除约束
+ALTER TABLE test1
+    MODIFY email VARCHAR(25) NULL;
+```
+
+### 唯一性约束
+
+> 用来限制某个字段/某列的值不能重复。
+>
+> 唯一约束可以是某一个列的值唯一，也可以多个列组合的值唯一。
+> 唯一性约束允许列值为空。
+> 在创建唯一约束的时候，如果不给唯一约束命名，就默认和列名相同。
+> ==MySQL会给唯一约束的列上默认创建一个唯一索引==。
+
+#### 创建约束添加数据
+
+```mysql
+#4. unique  (唯一性约束)
+
+#4.1 在CREATE TABLE时添加约束
+CREATE TABLE test2
+(
+    id        INT UNIQUE, #列级约束
+    last_name VARCHAR(15),
+    email     VARCHAR(25),
+    salary    DECIMAL(10, 2),
+#表级约束
+    CONSTRAINT uk_test2_email UNIQUE (email)
+);
+
+DESC test2;
+
+
+SELECT *
+FROM information_schema.table_constraints
+WHERE table_name = 'test2';
+
+#在创建唯一约束的时候，如果不给唯一约束命名，就默认和列名相同。
+
+INSERT INTO test2(id, last_name, email, salary)
+VALUES (1, 'Tom', 'tom@126.com', 4500);
+
+#错误：Duplicate entry '1' for key 'test2.id'
+INSERT INTO test2(id, last_name, email, salary)
+VALUES (1, 'Tom1', 'tom1@126.com', 4600);
+
+#错误：Duplicate entry 'tom@126.com' for key 'test2.uk_test2_email'
+INSERT INTO test2(id, last_name, email, salary)
+VALUES (2, 'Tom1', 'tom@126.com', 4600);
+
+#可以向声明为unique的字段上添加null值。而且可以多次添加null
+INSERT INTO test2(id, last_name, email, salary)
+VALUES (2, 'Tom1', NULL, 4600);
+
+INSERT INTO test2(id, last_name, email, salary)
+VALUES (3, 'Tom2', NULL, 4600);
+
+SELECT *
+FROM test2;
+
+#4.2 在ALTER TABLE时添加约束
+
+DESC test2;
+
+UPDATE test2
+SET salary = 5000
+WHERE id = 3;
+#方式1：
+ALTER TABLE test2
+    ADD CONSTRAINT uk_test2_sal UNIQUE (salary);
+#方式2：
+ALTER TABLE test2
+    MODIFY last_name VARCHAR(15) UNIQUE;
+
+#4.3 复合的唯一性约束
+CREATE TABLE USER
+(
+    id         INT,
+    `name`     VARCHAR(15),
+    `password` VARCHAR(25),
+
+#表级约束
+    CONSTRAINT uk_user_name_pwd UNIQUE (`name`, `password`)
+);
+
+INSERT INTO USER
+VALUES (1, 'Tom', 'abc');
+#可以成功的：
+INSERT INTO USER
+VALUES (1, 'Tom1', 'abc');
+
+SELECT *
+FROM USER;
+
+#案例：复合的唯一性约束的案例
+#学生表
+CREATE TABLE student
+(
+    sid    INT,                 #学号
+    sname  VARCHAR(20),         #姓名
+    tel    CHAR(11) UNIQUE KEY, #电话
+    cardid CHAR(18) UNIQUE KEY  #身份证号
+);
+
+#课程表
+CREATE TABLE course
+(
+    cid   INT,        #课程编号
+    cname VARCHAR(20) #课程名称
+);
+
+#选课表
+CREATE TABLE student_course
+(
+    id    INT,
+    sid   INT,            #学号
+    cid   INT,            #课程编号
+    score INT,
+    UNIQUE KEY (sid, cid) #复合唯一
+);
+INSERT INTO student
+VALUES (1, '张三', '13710011002', '101223199012015623');#成功
+INSERT INTO student
+VALUES (2, '李四', '13710011003', '101223199012015624');#成功
+INSERT INTO course
+VALUES (1001, 'Java'),
+       (1002, 'MySQL');#成功
+
+SELECT *
+FROM student;
+
+SELECT *
+FROM course;
+
+INSERT INTO student_course
+VALUES (1, 1, 1001, 89),
+       (2, 1, 1002, 90),
+       (3, 2, 1001, 88),
+       (4, 2, 1002, 56);#成功
+
+SELECT *
+FROM student_course;
+
+#错误：Duplicate entry '2-1002' for key 'student_course.sid'
+INSERT INTO student_course
+VALUES (5, 2, 1002, 67);
+```
+
+#### 删除唯一约束
+
+```mysql
+#4.4 删除唯一性约束
+-- 添加唯一性约束的列上也会自动创建唯一索引。
+-- 删除唯一约束只能通过删除唯一索引的方式删除。
+-- 删除时需要指定唯一索引名，唯一索引名就和唯一约束名一样。
+-- 如果创建唯一约束时未指定名称，如果是单列，就默认和列名相同；如果是组合列，那么默认和()中排在第一个的列名相同。也可以自定义唯一性约束名。
+
+
+SELECT *
+FROM information_schema.table_constraints
+WHERE table_name = 'student_course';
+
+SELECT *
+FROM information_schema.table_constraints
+WHERE table_name = 'test2';
+
+DESC test2;
+
+#如何删除唯一性索引
+ALTER TABLE test2
+    DROP INDEX last_name;
+
+ALTER TABLE test2
+    DROP INDEX uk_test2_sal;
+```
+
+
+
 # 附录
 
 ## 易忘命令
@@ -3232,3 +4409,30 @@ WHERE department_id = 50;
 > UPDATE test1
 > SET a = 100;
 > ```
+
+### 数据类型
+
+#### 整型
+
+> ==从MySQL 8.0.17开始，整数数据类型不推荐使用显示宽度属性==。
+>
+> 如`INT(5)`，我们不推荐这样写。
+>
+> ==显示宽度与类型可以存储的值范围无关==
+
+#### 浮点型
+
+> ==从MySQL 8.0.17开始，FLOAT(M,D) 和DOUBLE(M,D)用法在官方文档中已经明确不推荐使用==
+
+#### 日期与时间类型
+
+> 从MySQL5.5.27开始，2位格式的YEAR已经不推荐使用。
+>
+> YEAR默认格式就是“YYYY”，没必要写成YEAR(4)，
+>
+> 从MySQL 8.0.19开始，不推荐使用指定显示宽度的YEAR(4)数据类型。
+
+#### 字符
+
+> MySQL4.0版本以下，varchar(20)：指的是20字节
+> MySQL5.0版本以上，varchar(20)：指的是20字符。
