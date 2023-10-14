@@ -20,6 +20,8 @@
 > * [<font color="violet">第11章_数据处理之增删改.pdf</font>](./相关资料/第11章_数据处理之增删改.pdf)
 > * [<font color="violet">第12章_MySQL数据类型精讲.pdf</font>](./相关资料/第12章_MySQL数据类型精讲.pdf)
 > * [<font color="violet">第13章_约束.pdf</font>](./相关资料/第13章_约束.pdf)
+> * [<font color="violet">第14章_视图.pdf</font>](./相关资料/第14章_视图.pdf)
+> * [<font color="violet">第15章_存储过程与函数.pdf</font>](./相关资料/第15章_存储过程与函数.pdf)
 
 ## 数据库概述
 
@@ -157,6 +159,19 @@
 ##### 自我引用(Self reference)
 
 ![1693496994712](MySQL.assets/1693496994712.png)
+
+### 常见的数据库对象
+
+| **对象**               | **描述**                                                     |
+| ---------------------- | ------------------------------------------------------------ |
+| 表(TABLE)              | 表是存储数据的逻辑单元，以行和列的形式存在，列就是字段，行就是记录 |
+| 数据字典               | 就是系统表，存放数据库相关信息的表。系统表的数据通常由数据库系统维护，程序员通常不应该修改，只可查看 |
+| 约束   (CONSTRAINT)    | 执行数据校验的规则，用于保证数据完整性的规则                 |
+| 视图(VIEW)             | 一个或者多个数据表里的数据的逻辑显示，视图并不存储数据       |
+| 索引(INDEX)            | 用于提高查询性能，相当于书的目录                             |
+| 存储过程   (PROCEDURE) | 用于完成一次完整的业务处理，没有返回值，但可通过传出参数将多个值传给调用环境 |
+| 存储函数   (FUNCTION)  | 用于完成一次特定的计算，具有一个返回值                       |
+| 触发器   (TRIGGER)     | 相当于一个事件监听器，当数据库发生特定事件后，触发器被触发，完成相应的处理 |
 
 ## MySQL安装
 
@@ -444,6 +459,8 @@ mysql> show variables like 'collation_%';
 
 ### SELECT
 
+> 注：这样复制表，只是数据赋值过来了，除了not null其它约束都没有复制过来。
+
 #### 基本的SELECT语句
 
 > ```mysql
@@ -617,18 +634,18 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 >   * 如果等号两边的值、字符串或表达式中有一个为NULL，则比较结果为NULL。
 >
 >   * ```mysql
->     mysql> SELECT 1 = 1, 1 = '1', 1 = 0, 'a' = 'a', (5 + 3) = (2 + 6), '' = NULL , NULL =
->     NULL;
->     +-------+---------+-------+-----------+-------------------+-----------+-------------+
->     | 1 = 1 | 1 = '1' | 1 = 0 | 'a' = 'a' | (5 + 3) = (2 + 6) | '' = NULL | NULL = NULL |
->     +-------+---------+-------+-----------+-------------------+-----------+-------------+
->      | 1 	| 1 	| 0		 | 1 		| 1 			| NULL 		| NULL 	|
->     +-------+---------+-------+-----------+-------------------+-----------+-------------+
->     1 row in set (0.00 sec)
->     ```
-> ```
+>    mysql> SELECT 1 = 1, 1 = '1', 1 = 0, 'a' = 'a', (5 + 3) = (2 + 6), '' = NULL , NULL =
+>    NULL;
+>    +-------+---------+-------+-----------+-------------------+-----------+-------------+
+>    | 1 = 1 | 1 = '1' | 1 = 0 | 'a' = 'a' | (5 + 3) = (2 + 6) | '' = NULL | NULL = NULL |
+>    +-------+---------+-------+-----------+-------------------+-----------+-------------+
+>   	| 1 	| 1 	| 0		 | 1 		| 1 			| NULL 		| NULL 	|
+>    +-------+---------+-------+-----------+-------------------+-----------+-------------+
+>    1 row in set (0.00 sec)
+>    ```
+>  ```
 > 
-> ```
+>  ```
 >
 > ```
 > 
@@ -636,6 +653,8 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 >
 > ```
 > 
+> ```
+>
 > mysql> SELECT 1 = 2, 0 = 'abc', 1 = 'abc' FROM dual;
 > +-------+-----------+-----------+
 > | 1 = 2 | 0 = 'abc' | 1 = 'abc' |
@@ -644,22 +663,22 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 > +-------+-----------+-----------+
 > 1 row in set, 2 warnings (0.00 sec)
 > ```
->
 > 
->
+> 
+> 
 > ==安全等于运算符==
->
+> 
 > * 与=并无多大区别，主要用于处理null值
->
+> 
 > * ```mysql
->   mysql> SELECT 1 <=> NULL, NULL <=> NULL FROM DUAL;
->   +------------+---------------+
->   | 1 <=> NULL | NULL <=> NULL |
->   +------------+---------------+
->   |          0 |             1 |
->   +------------+---------------+
->   1 row in set (0.00 sec)
->   ```
+> mysql> SELECT 1 <=> NULL, NULL <=> NULL FROM DUAL;
+> +------------+---------------+
+> | 1 <=> NULL | NULL <=> NULL |
+> +------------+---------------+
+> |          0 |             1 |
+> +------------+---------------+
+> 1 row in set (0.00 sec)
+> ```
 > ```
 > 
 > ```
@@ -4164,6 +4183,1010 @@ ALTER TABLE test2
 
 
 
+### PRIMARY KEY 约束
+
+![1697292944626](MySQL.assets/1697292944626.png)
+
+> * 主键约束相当于唯一约束+非空约束的组合
+> * 一个表最多只能有一个主键约束
+> * 主键约束对应着表中的一列或者多列（复合主键）
+> * 如果是多列组合的复合主键约束，那么这些列都不允许为空值，并且组合的值不允许重复。
+> * ==MySQL的主键名总是PRIMARY==，就算自己命名了主键约束名也没用。
+> * 当创建主键约束时，系统默认会在所在的列或列组合上建立对应的主键索引（能够根据主键查询的，就根据主键查询，效率更高）。如果删除主键约束了，主键约束对应的索引就自动删除了。
+> * 不要修改主键字段的值。因为主键是数据记录的唯一标识，如果修改了主键的值，就有可能会破坏数据的完整性。
+
+#### 添加约束
+
+##### 在CREATE TABLE时添加约束
+
+```mysql
+#5.1 在CREATE TABLE时添加约束
+
+#一个表中最多只能有一个主键约束。
+
+#错误：Multiple primary key defined
+CREATE TABLE test3
+(
+    id        INT PRIMARY KEY, #列级约束
+    last_name VARCHAR(15) PRIMARY KEY,
+    salary    DECIMAL(10, 2),
+    email     VARCHAR(25)
+);
+
+# 主键约束特征：非空且唯一，用于唯一的标识表中的一条记录。
+CREATE TABLE test4
+(
+    id        INT PRIMARY KEY, #列级约束
+    last_name VARCHAR(15),
+    salary    DECIMAL(10, 2),
+    email     VARCHAR(25)
+);
+
+#MySQL的主键名总是PRIMARY，就算自己命名了主键约束名也没用。
+CREATE TABLE test5
+(
+    id        INT,
+    last_name VARCHAR(15),
+    salary    DECIMAL(10, 2),
+    email     VARCHAR(25),
+#表级约束
+    CONSTRAINT pk_test5_id PRIMARY KEY (id) #没有必要起名字。
+);
+
+SELECT *
+FROM information_schema.table_constraints
+WHERE table_name = 'test5';
+
+INSERT INTO test4(id, last_name, salary, email)
+VALUES (1, 'Tom', 4500, 'tom@126.com');
+
+#错误：Duplicate entry '1' for key 'test4.PRIMARY'
+INSERT INTO test4(id, last_name, salary, email)
+VALUES (1, 'Tom', 4500, 'tom@126.com');
+
+#错误：Column 'id' cannot be null
+INSERT INTO test4(id, last_name, salary, email)
+VALUES (NULL, 'Tom', 4500, 'tom@126.com');
+
+SELECT *
+FROM test4;
+
+
+CREATE TABLE user1
+(
+    id       INT,
+    NAME     VARCHAR(15),
+    PASSWORD VARCHAR(25),
+
+    PRIMARY KEY (NAME, PASSWORD)
+
+);
+#如果是多列组合的复合主键约束，那么这些列都不允许为空值，并且组合的值不允许重复。
+INSERT INTO user1
+VALUES (1, 'Tom', 'abc');
+
+INSERT INTO user1
+VALUES (1, 'Tom1', 'abc');
+#错误：Column 'name' cannot be null
+INSERT INTO user1
+VALUES (1, NULL, 'abc');
+
+SELECT *
+FROM user1;
+```
+
+##### 在ALTER TABLE时添加约束
+
+```mysql
+#5.2 在ALTER TABLE时添加约束
+
+CREATE TABLE test6
+(
+    id        INT,
+    last_name VARCHAR(15),
+    salary    DECIMAL(10, 2),
+    email     VARCHAR(25)
+);
+
+DESC test6;
+
+ALTER TABLE test6
+    ADD PRIMARY KEY (id);
+```
+
+#### 删除主键约束
+
+> 在实际开发中，不会去删除表中的主键约束！
+
+```mysql
+#5.3 如何删除主键约束 (在实际开发中，不会去删除表中的主键约束！)
+ALTER TABLE test6
+    DROP PRIMARY KEY;
+```
+
+### 自增列：AUTO_INCREMENT
+
+> * 一个表最多只能有一个自增长列
+> * 自增长列约束的列必须是键列（主键列，唯一键列）
+> * 自增约束的列的数据类型必须是整数类型
+> * 如果自增列指定了 0 和 null，会在当前最大值的基础上自增；如果自增列手动指定了具体值，直接赋值为具体值。
+>
+> MySQL 8.0新特性—自增变量的持久化
+>
+> *  在MySQL 5.7系统中，对于自增主键的分配规则，是由InnoDB数据字典内部一个==计数器==来决定的，而该计数器只在==内存中维护==，并不会持久化到磁盘中。当数据库重启时，该计数器会被初始化。
+> * MySQL 8.0将自增主键的计数器持久化到==重做日志==中。每次计数器发生改变，都会将其写入重做日志中。如果数据库重启，InnoDB会根据重做日志中的信息来初始化计数器的内存值。
+>
+> 最明显的区别就是重启后，删除现在最大的id那行数据后，再没有再次插入的情况下，重启系统。
+> mysql5.7会从现有表数据的最大id计数
+> mysql8.0会从删之前的最大id计数
+
+#### 添加约束
+
+##### 在CREATE TABLE时添加
+
+```mysql
+# 6.1 在CREATE TABLE时添加
+CREATE TABLE test7
+(
+    id        INT PRIMARY KEY AUTO_INCREMENT,
+    last_name VARCHAR(15)
+);
+#开发中，一旦主键作用的字段上声明有AUTO_INCREMENT，则我们在添加数据时，就不要给主键
+#对应的字段去赋值了。
+INSERT INTO test7(last_name)
+VALUES ('Tom');
+
+SELECT *
+FROM test7;
+
+#当我们向主键（含AUTO_INCREMENT）的字段上添加0 或 null时，实际上会自动的往上添加指定的字段的数值
+INSERT INTO test7(id, last_name)
+VALUES (0, 'Tom');
+
+INSERT INTO test7(id, last_name)
+VALUES (NULL, 'Tom');
+
+INSERT INTO test7(id, last_name)
+VALUES (10, 'Tom');
+
+INSERT INTO test7(id, last_name)
+VALUES (-10, 'Tom');
+```
+
+##### 在ALTER TABLE时添加
+
+```mysql
+#6.2 在ALTER TABLE 时添加
+CREATE TABLE test8
+(
+    id        INT PRIMARY KEY,
+    last_name VARCHAR(15)
+);
+
+DESC test8;
+
+ALTER TABLE test8
+    MODIFY id INT AUTO_INCREMENT;
+```
+
+#### 删除约束
+
+```mysql
+#6.3 在ALTER TABLE 时删除
+
+ALTER TABLE test8
+    MODIFY id INT;
+```
+
+
+
+### FOREIGN KEY约束
+
+> 阿里开发规范
+>
+> 【 强制 】==不得使用外键与级联，一切外键概念必须在应用层解决==。
+> 说明：（概念解释）学生表中的 student_id 是主键，那么成绩表中的 student_id 则为外键。如果更新学生表中的 student_id，同时触发成绩表中的 student_id 更新，即为级联更新。外键与级联更新适用于 单机低并发 ，不适合 分布式 、 高并发集群 ；级联更新是强阻塞，存在数据库 更新风暴 的风险；外键影响数据库的 插入速度 。
+>
+> 注：==外键约束（FOREIGN KEY）不能任意选择存储殷勤==
+
+![1697294969812](MySQL.assets/1697294969812.png)
+
+#### 概念及特点
+
+> 主表（父表）：被引用的表，被参考的表
+> 从表（子表）：引用别人的表，参考别人的表
+> 例如：员工表的员工所在部门这个字段的值要参考部门表：部门表是主表，员工表是从表。
+> 例如：学生表、课程表、选课表：选课表的学生和课程要分别参考学生表和课程表，学生表和课程表是主表，选课表是从表。
+>
+> 特点：
+> 从表的外键列，必须引用/参考主表的主键或唯一约束的列。
+> 在创建外键约束时，如果不给外键约束命名，==默认名不是列名，而是自动产生一个外键名==，也可以指定外键约束名。
+>
+> 创建(CREATE)表时就指定外键约束的话，先创建主表，再创建从表。
+> 删表时，先删从表（或先删除外键约束），再删除主表。
+> 	当主表的记录被从表参照时，主表的记录将不允许删除，如果要删除数据，需要先删除从表中依赖该记录的数据，然后才可以删除主表的数据。
+> 	一个表可以建立多个外键约束。
+>
+> ​	从表的外键列与主表被参照的列名字可以不相同，但是数据类型必须一样，逻辑意义一致。如果类型不一样，创建子表时，就会出现错误“ERROR 1005 (HY000): Can't createtable'database.tablename'(errno: 150)”。
+>
+> ​	==当创建外键约束时，系统默认会在所在的列上建立对应的普通索引==。但是索引名是外键的约束名。（根据外键查询效率很高）
+>
+> ​	==删除外键约束后，必须 手动 删除对应的索引==
+
+#### 添加外键约束
+
+##### 在CREATE TABLE时添加
+
+```mysql
+#7.1 在CREATE TABLE 时添加
+
+#主表和从表；父表和子表
+
+#①先创建主表
+CREATE TABLE dept1
+(
+    dept_id   INT,
+    dept_name VARCHAR(15)
+);
+#②再创建从表
+CREATE TABLE emp1
+(
+    emp_id        INT PRIMARY KEY AUTO_INCREMENT,
+    emp_name      VARCHAR(15),
+    department_id INT,
+
+#表级约束
+    CONSTRAINT fk_emp1_dept_id FOREIGN KEY (department_id) REFERENCES dept1 (dept_id)
+
+);
+
+#上述操作报错，因为主表中的dept_id上没有主键约束或唯一性约束。
+#③ 添加
+ALTER TABLE dept1
+    ADD PRIMARY KEY (dept_id);
+
+DESC dept1;
+
+#④ 再创建从表
+CREATE TABLE emp1
+(
+    emp_id        INT PRIMARY KEY AUTO_INCREMENT,
+    emp_name      VARCHAR(15),
+    department_id INT,
+
+#表级约束
+    CONSTRAINT fk_emp1_dept_id FOREIGN KEY (department_id) REFERENCES dept1 (dept_id)
+
+);
+
+DESC emp1;
+
+
+SELECT *
+FROM information_schema.table_constraints
+WHERE table_name = 'emp1';
+```
+
+```mysql
+#7.2 演示外键的效果
+#添加失败
+INSERT INTO emp1
+VALUES (1001, 'Tom', 10);
+
+#
+INSERT INTO dept1
+VALUES (10, 'IT');
+#在主表dept1中添加了10号部门以后，我们就可以在从表中添加10号部门的员工
+INSERT INTO emp1
+VALUES (1001, 'Tom', 10);
+
+#删除失败
+DELETE
+FROM dept1
+WHERE dept_id = 10;
+
+#更新失败
+UPDATE dept1
+SET dept_id = 20
+WHERE dept_id = 10;
+```
+
+##### 在ALTER TABLE时添加外键约束
+
+```mysql
+#7.3 在ALTER TABLE时添加外键约束
+CREATE TABLE dept2
+(
+    dept_id   INT PRIMARY KEY,
+    dept_name VARCHAR(15)
+);
+
+CREATE TABLE emp2
+(
+    emp_id        INT PRIMARY KEY AUTO_INCREMENT,
+    emp_name      VARCHAR(15),
+    department_id INT
+);
+
+ALTER TABLE emp2
+    ADD CONSTRAINT fk_emp2_dept_id FOREIGN KEY (department_id) REFERENCES dept2 (dept_id);
+
+SELECT *
+FROM information_schema.table_constraints
+WHERE table_name = 'emp2';
+```
+
+#### 约束等级
+
+> * `Cascade方式` ：在父表上update/delete记录时，同步update/delete掉子表的匹配记录
+> * `Set null`方式 ：在父表上update/delete记录时，将子表上匹配记录的列设为null，但是要注意子表的外键列不能为not null
+> * `No action`方式 ：如果子表中有匹配的记录，则不允许对父表对应候选键进行update/delete操作
+> * `Restrict方式` ：同no action， 都是立即检查外键约束
+> * `Set default`方式 （在可视化工具SQLyog中可能显示空白）：父表有变更时，子表将外键列设置成一个默认的值，但Innodb不能识别。
+>
+> 对于外键约束，最好是采用: `ON UPDATE CASCADE ON DELETE RESTRICT`的方式。
+
+```mysql
+#演示：
+# on update cascade on delete set null
+CREATE TABLE dept
+(
+    did   INT PRIMARY KEY, #部门编号
+    dname VARCHAR(50)      #部门名称
+);
+
+CREATE TABLE emp
+(
+    eid    INT PRIMARY KEY, #员工编号
+    ename  VARCHAR(5),      #员工姓名
+    deptid INT,             #员工所在的部门
+    FOREIGN KEY (deptid) REFERENCES dept (did) ON UPDATE CASCADE ON DELETE SET NULL
+    #把修改操作设置为级联修改等级，把删除操作设置为set null等级
+);
+
+INSERT INTO dept
+VALUES (1001, '教学部');
+INSERT INTO dept
+VALUES (1002, '财务部');
+INSERT INTO dept
+VALUES (1003, '咨询部');
+
+
+INSERT INTO emp
+VALUES (1, '张三', 1001); #在添加这条记录时，要求部门表有1001部门
+INSERT INTO emp
+VALUES (2, '李四', 1001);
+INSERT INTO emp
+VALUES (3, '王五', 1002);
+
+
+UPDATE dept
+SET did = 1004
+WHERE did = 1002;
+
+DELETE
+FROM dept
+WHERE did = 1004;
+
+
+SELECT *
+FROM dept;
+
+SELECT *
+FROM emp;
+
+#结论：对于外键约束，最好是采用: `ON UPDATE CASCADE ON DELETE RESTRICT` 的方式。
+```
+
+#### 删除外键约束
+
+```mysql
+#7.5 删除外键约束
+
+#一个表中可以声明有多个外键约束
+USE atguigudb;
+SELECT *
+FROM information_schema.table_constraints
+WHERE table_name = 'employees';
+
+USE dbtest13;
+
+SELECT *
+FROM information_schema.table_constraints
+WHERE table_name = 'emp1';
+
+#删除外键约束
+
+ALTER TABLE emp1
+    DROP FOREIGN KEY fk_emp1_dept_id;
+
+#再手动的删除外键约束对应的普通索引
+SHOW INDEX FROM emp1;
+
+ALTER TABLE emp1
+    DROP INDEX fk_emp1_dept_id;
+```
+
+
+
+### CHECK约束
+
+> 检查某个字段的值是否符号xx要求，一般指的是值的范围
+>
+> MySQL5.7不支持。
+> 	MySQL5.7 可以使用check约束，但check约束对数据验证没有任何作用。添加数据时，没有任何错误或警告。
+>
+> MySQL 8.0中可以使用check约束了。
+
+```mysql
+#8. check 约束
+# MySQL5.7 不支持CHECK约束，MySQL8.0支持CHECK约束。
+
+CREATE TABLE test10
+(
+    id        INT,
+    last_name VARCHAR(15),
+    salary    DECIMAL(10, 2) CHECK (salary > 2000)
+);
+
+INSERT INTO test10
+VALUES (1, 'Tom', 2500);
+
+#添加失败
+INSERT INTO test10
+VALUES (2, 'Tom1', 1500);
+
+SELECT *
+FROM test10;
+```
+
+### DEFALUT约束
+
+> 给某个字段/某列指定默认值，一旦设置默认值，在插入数据时，如果此字段没有显式赋值，则赋值为默认值。
+
+#### 添加约束
+
+##### 在CREATE TABLE添加约束
+
+```mysql
+#9.1 在CREATE TABLE添加约束
+CREATE TABLE test11
+(
+    id        INT,
+    last_name VARCHAR(15),
+    salary    DECIMAL(10, 2) DEFAULT 2000
+);
+
+DESC test11;
+
+INSERT INTO test11(id, last_name, salary)
+VALUES (1, 'Tom', 3000);
+
+INSERT INTO test11(id, last_name)
+VALUES (2, 'Tom1');
+
+SELECT *
+FROM test11;
+```
+
+##### 在ALTER TABLE添加约束
+
+```mysql
+#9.2 在ALTER TABLE添加约束
+CREATE TABLE test12
+(
+    id        INT,
+    last_name VARCHAR(15),
+    salary    DECIMAL(10, 2)
+);
+
+DESC test12;
+
+ALTER TABLE test12
+    MODIFY salary DECIMAL(8, 2) DEFAULT 2500;
+```
+
+#### 删除约束
+
+```mysql
+#9.3 在ALTER TABLE删除约束
+ALTER TABLE test12
+    MODIFY salary DECIMAL(8, 2);
+
+
+SHOW CREATE TABLE test12;
+```
+
+
+
+## 视图
+
+### 视图概述
+
+![1697297974506](MySQL.assets/1697297974506.png)
+
+> * 视图是一种 虚拟表 ，本身是==不具有数据==的，占用很少的内存空间。
+>
+> * 视图建立在已有表的基础上, 视图赖以建立的这些表称为`基表`。
+>
+>   ![1697298110879](MySQL.assets/1697298110879.png)
+>
+> * 视图的创建和删除只影响视图本身，不影响对应的基表。但是当对视图中的数据进行增加、删除和修改操作时，数据表中的数据会相应地发生变化，反之亦然。
+>
+> * 可以将视图理解为==存储起来的 SELECT 语句==
+
+### 创建视图
+
+#### 创建单表视图
+
+```mysql
+#2.1 针对于单表
+#情况1：视图中的字段与基表的字段有对应关系
+CREATE VIEW vu_emp1
+AS
+SELECT employee_id, last_name, salary
+FROM emps;
+
+SELECT *
+FROM vu_emp1;
+
+#确定视图中字段名的方式1：
+CREATE VIEW vu_emp2
+AS
+SELECT employee_id emp_id, last_name lname, salary #查询语句中字段的别名会作为视图中字段的名称出现
+FROM emps
+WHERE salary > 8000;
+
+#确定视图中字段名的方式2：
+CREATE VIEW vu_emp3(emp_id, NAME, monthly_sal) #小括号内字段个数与SELECT中字段个数相同
+AS
+SELECT employee_id, last_name, salary
+FROM emps
+WHERE salary > 8000;
+
+SELECT *
+FROM vu_emp3;
+
+#情况2：视图中的字段在基表中可能没有对应的字段
+CREATE VIEW vu_emp_sal
+AS
+SELECT department_id, AVG(salary) avg_sal
+FROM emps
+WHERE department_id IS NOT NULL
+GROUP BY department_id;
+
+SELECT *
+FROM vu_emp_sal;
+```
+
+#### 创建多表联合视图
+
+```mysql
+#2.2 针对于多表
+
+CREATE VIEW vu_emp_dept
+AS
+SELECT e.employee_id, e.department_id, d.department_name
+FROM emps e
+         JOIN depts d
+              ON e.`department_id` = d.`department_id`;
+
+SELECT *
+FROM vu_emp_dept;
+
+#利用视图对数据进行格式化
+
+CREATE VIEW vu_emp_dept1
+AS
+SELECT CONCAT(e.last_name, '(', d.department_name, ')') emp_info
+FROM emps e
+         JOIN depts d
+              ON e.`department_id` = d.`department_id`;
+
+SELECT *
+FROM vu_emp_dept1;
+```
+
+#### 基于视图创建视图
+
+> 注删除依赖视图会导致视图失效
+
+```mysql
+#2.3 基于视图创建视图
+
+CREATE VIEW vu_emp4
+AS
+SELECT employee_id, last_name
+FROM vu_emp1;
+
+SELECT *
+FROM vu_emp4;
+```
+
+### 查看视图
+
+```mysql
+#3. 查看视图
+# 语法1：查看数据库的表对象、视图对象
+SHOW TABLES;
+
+#语法2：查看视图的结构
+DESCRIBE vu_emp1;
+
+#语法3：查看视图的属性信息
+SHOW TABLE STATUS LIKE 'vu_emp1';
+
+#语法4：查看视图的详细定义信息
+SHOW CREATE VIEW vu_emp1;
+```
+
+### 更新视图的数据
+
+#### 一般情况，可以更新视图的数据
+
+```mysql
+#4.1 一般情况，可以更新视图的数据
+SELECT *
+FROM vu_emp1;
+
+SELECT employee_id, last_name, salary
+FROM emps;
+#更新视图的数据，会导致基表中数据的修改
+UPDATE vu_emp1
+SET salary = 20000
+WHERE employee_id = 101;
+
+#同理，更新表中的数据，也会导致视图中的数据的修改
+UPDATE emps
+SET salary = 10000
+WHERE employee_id = 101;
+
+#删除视图中的数据，也会导致表中的数据的删除
+DELETE
+FROM vu_emp1
+WHERE employee_id = 101;
+
+SELECT employee_id, last_name, salary
+FROM emps
+WHERE employee_id = 101;
+```
+
+#### 不能更新视图中的数据
+
+```mysql
+#情况2：视图中的字段在基表中可能没有对应的字段
+CREATE VIEW vu_emp_sal
+AS
+SELECT department_id, AVG(salary) avg_sal
+FROM emps
+WHERE department_id IS NOT NULL
+GROUP BY department_id;
+
+SELECT *
+FROM vu_emp_sal;
+
+#更新失败
+UPDATE vu_emp_sal
+SET avg_sal = 5000
+WHERE department_id = 30;
+
+#删除失败
+DELETE
+FROM vu_emp_sal
+WHERE department_id = 30;
+```
+
+### 修改视图
+
+```mysql
+#5. 修改视图
+
+DESC vu_emp1;
+
+#方式1
+CREATE OR REPLACE VIEW vu_emp1
+AS
+SELECT employee_id, last_name, salary, email
+FROM emps
+WHERE salary > 7000;
+
+#方式2
+    ALTER VIEW vu_emp1
+    AS
+        SELECT employee_id, last_name, salary, email, hire_date
+        FROM emps;
+```
+
+### 删除视图
+
+```mysql
+#6. 删除视图
+SHOW TABLES;
+
+DROP VIEW vu_emp4;
+
+DROP VIEW IF EXISTS vu_emp2,vu_emp3;
+```
+
+> 视图可以达到访问限制的目的。也可以理解为视图具有 隔离性 。视图相当于在用户和实际的数据表之间加了一层虚拟表。
+
+## 存储过程与函数
+
+> 存储过程就是就是一组经过`预先编译`的SQL语句的封装。
+>
+> 执行过程：存储过程预先存储在 MySQL 服务器上，需要执行的时候，客户端只需要向服务器端发出调用存储过程的命令，服务器端就可以把预先存储好的这一系列 SQL 语句全部执行。
+
+### 创建和使用存储过程
+
+#### 语法
+
+```mysql
+CREATE PROCEDURE 存储过程名(IN|OUT|INOUT 参数名 参数类型,...)
+[characteristics ...]
+BEGIN
+	存储过程体
+END
+```
+
+> `IN` ：当前参数为输入参数，也就是表示入参；	默认就是 `IN`
+> `OUT `：当前参数为输出参数，也就是表示出参；
+> `INOUT` ：当前参数既可以为输入参数，也可以为输出参数。
+>
+> 形参类型可以是 MySQL数据库中的任意类型。==类型尽量与要匹配的SQL语句一致==
+
+> `characteristics` 表示创建存储过程时指定的对存储过程的约束条件，其取值信息如下：
+>
+> ```mysql
+> LANGUAGE SQL
+> | [NOT] DETERMINISTIC
+> | { CONTAINS SQL | NO SQL | READS SQL DATA | MODIFIES SQL DATA }
+> | SQL SECURITY { DEFINER | INVOKER }
+> | COMMENT 'string'
+> ```
+>
+> * `LANGUAGE SQL` ：说明存储过程执行体是由SQL语句组成的，当前系统支持的语言为SQL。
+> * `[NOT] DETERMINISTIC` ：指明存储过程执行的结果是否确定。DETERMINISTIC表示结果是确定的。每次执行存储过程时，相同的输入会得到相同的输出。NOT DETERMINISTIC表示结果是不确定的，相同的输入可能得到不同的输出。如果没有指定任意一个值，==默认为`NOT DETERMINISTIC`==。
+> * `{ CONTAINS SQL | NO SQL | READS SQL DATA | MODIFIES SQL DATA } `：指明子程序使用SQL语句的限制。
+>   * CONTAINS SQL表示当前存储过程的子程序包含SQL语句，但是并不包含读写数据的SQL语句；
+>   * NO SQL表示当前存储过程的子程序中不包含任何SQL语句；
+>   * READS SQL DATA表示当前存储过程的子程序中包含读数据的SQL语句；
+>   * MODIFIES SQL DATA表示当前存储过程的子程序中包含写数据的SQL语句。
+>   * ==默认情况下，系统会指定为CONTAINS SQL==。
+> * `SQL SECURITY { DEFINER | INVOKER } `：执行当前存储过程的权限，即指明哪些用户能够执行当前存储过程。
+>   * DEFINER 表示只有当前存储过程的创建者或者定义者才能执行当前存储过程；
+>   * INVOKER 表示拥有当前存储过程的访问权限的用户能够执行当前存储过程。
+>   * 如果没有设置相关的值，则MySQL==默认指定值为DEFINER==。
+> * `COMMENT 'string' `：注释信息，可以用来描述存储过程。
+
+> 存储过程体中可以有多条 SQL 语句，如果仅仅一条SQL 语句，则可以省略 BEGIN 和 END
+>
+> ```mysql
+> 1. BEGIN…END：BEGIN…END 中间包含了多个语句，每个语句都以（;）号为结束符。
+> 2. DECLARE：DECLARE 用来声明变量，使用的位置在于 BEGIN…END 语句中间，而且需要在其他语句使用之前进行变量的声明。
+> 3. SET：赋值语句，用于对变量进行赋值。
+> 4. SELECT… INTO：把从数据表中查询的结果存放到变量中，也就是为变量赋值。
+> ```
+
+> 需要设置新的结束标记
+>
+> ```mysql
+> DELIMITER 新的结束标记
+> ```
+>
+> 因为MySQL默认的语句结束符号为分号‘;’。为了避免与存储过程中SQL语句结束符相冲突，需要使用DELIMITER改变存储过程的结束符。
+>
+> 比如：“DELIMITER //”语句的作用是将MySQL的结束符设置为//，并以“END //”结束存储过程。存储过程定义完毕之后再使用“DELIMITER ;”恢复默认结束符。DELIMITER也可以指定其他符号作为结束符。
+>
+> 当使用DELIMITER命令时，应该避免使用反斜杠（‘\’）字符，因为反斜线是MySQL的转义字符。
+>
+> ```mysql
+> #实例
+> DELIMITER $
+> 
+> CREATE PROCEDURE 存储过程名(IN|OUT|INOUT 参数名 参数类型,...)
+> [characteristics ...]
+> BEGIN
+> 	sql语句1;
+> 	sql语句2;
+> 	
+> END $
+> ```
+
+#### 调用语法
+
+```mysql
+CALL 存储过程名(实参列表)
+```
+
+> ```mysql
+> #调用in模式的参数
+> CALL sp1('值');		
+> 
+> #调用out模式的参数
+> SET @name;
+> CALL sp1(@name);
+> SELECT @name;
+> 
+> #调用inout模式的参数
+> SET @name=值;
+> CALL sp1(@name);
+> SELECT @name;
+> ```
+
+#### 示例
+
+##### 无参数无返回值
+
+```mysql
+#类型1：无参数无返回值
+
+#举例1：创建存储过程select_all_data()，查看 employees 表的所有数据
+
+DELIMITER $		#用$表示SQL的结束语句
+
+CREATE PROCEDURE select_all_data()
+BEGIN
+    SELECT * FROM employees;
+END $
+
+DELIMITER ;
+
+#2. 存储过程的调用
+
+CALL select_all_data();
+
+#举例2：创建存储过程avg_employee_salary()，返回所有员工的平均工资
+
+DELIMITER //
+
+CREATE PROCEDURE avg_employee_salary()
+BEGIN
+    SELECT AVG(salary) FROM employees;
+
+END //
+
+DELIMITER ;
+
+#调用
+CALL avg_employee_salary();
+
+
+#举例3：创建存储过程show_max_salary()，用来查看“emps”表的最高薪资值。
+
+DELIMITER //
+
+CREATE PROCEDURE show_max_salary()
+BEGIN
+    SELECT MAX(salary)
+    FROM employees;
+END //
+
+DELIMITER ;
+
+#调用
+CALL show_max_salary();
+```
+
+##### 带 OUT
+
+```mysql
+#类型2：带 OUT
+#举例4：创建存储过程show_min_salary()，查看“emps”表的最低薪资值。并将最低薪资
+#通过OUT参数“ms”输出
+
+DESC employees;
+
+DELIMITER //
+
+CREATE PROCEDURE show_min_salary(OUT ms DOUBLE)
+BEGIN
+    SELECT MIN(salary)
+    INTO ms
+    FROM employees;
+END //
+
+DELIMITER ;
+
+#调用
+
+CALL show_min_salary(@ms);
+
+#查看变量值
+SELECT @ms;
+```
+
+##### 带 IN
+
+```mysql
+#类型3：带 IN
+#举例5：创建存储过程show_someone_salary()，查看“emps”表的某个员工的薪资，
+#并用IN参数empname输入员工姓名。
+
+DELIMITER //
+
+CREATE PROCEDURE show_someone_salary(IN empname VARCHAR(20))
+BEGIN
+    SELECT salary
+    FROM employees
+    WHERE last_name = empname;
+END //
+
+DELIMITER ;
+
+#调用方式1
+CALL show_someone_salary('Abel');
+#调用方式2
+SET @empname := 'Abel';
+CALL show_someone_salary(@empname);
+
+
+SELECT *
+FROM employees
+WHERE last_name = 'Abel';
+```
+
+##### 带 IN 和 OUT
+
+```mysql
+#类型4：带 IN 和 OUT
+#举例6：创建存储过程show_someone_salary2()，查看“emps”表的某个员工的薪资，
+#并用IN参数empname输入员工姓名，用OUT参数empsalary输出员工薪资。
+
+DELIMITER //
+
+CREATE PROCEDURE show_someone_salary2(IN empname VARCHAR(20), OUT empsalary DECIMAL(10, 2))
+BEGIN
+    SELECT salary
+    INTO empsalary
+    FROM employees
+    WHERE last_name = empname;
+END //
+
+DELIMITER ;
+
+#调用
+SET @empname = 'Abel';
+CALL show_someone_salary2(@empname, @empsalary);
+
+SELECT @empsalary;
+```
+
+##### 带 INOUT
+
+```mysql
+#类型5：带 INOUT
+#举例7：创建存储过程show_mgr_name()，查询某个员工领导的姓名，并用INOUT参数“empname”输入员工姓名，
+#输出领导的姓名。
+
+DESC employees;
+
+DELIMITER $
+
+CREATE PROCEDURE show_mgr_name(INOUT empname VARCHAR(25))
+BEGIN
+
+    SELECT last_name
+    INTO empname
+    FROM employees
+    WHERE employee_id = (
+        SELECT manager_id
+        FROM employees
+        WHERE last_name = empname
+    );
+
+END $
+
+DELIMITER ;
+
+#调用
+SET @empname := 'Abel';				#其中:表示  明确赋值符号的意思，这里写不写都行。
+CALL show_mgr_name(@empname);
+
+SELECT @empname;
+```
+
+
+
 # 附录
 
 ## 易忘命令
@@ -4297,6 +5320,11 @@ ALTER TABLE test2
 > ```
 >
 > 
+
+### CHECK约束
+
+> Oracle一直支持。
+> MySQL5.7x不支持，MySQL8.0后才开始支持。
 
 ## 常用SQL技巧
 
@@ -4436,3 +5464,23 @@ ALTER TABLE test2
 
 > MySQL4.0版本以下，varchar(20)：指的是20字节
 > MySQL5.0版本以上，varchar(20)：指的是20字符。
+
+### 约束
+
+#### 自增列：AUTO_INCREMENT
+
+> MySQL 8.0新特性—自增变量的持久化
+>
+> -  在MySQL 5.7系统中，对于自增主键的分配规则，是由InnoDB数据字典内部一个==计数器==来决定的，而该计数器只在==内存中维护==，并不会持久化到磁盘中。当数据库重启时，该计数器会被初始化。
+> - MySQL 8.0将自增主键的计数器持久化到==重做日志==中。每次计数器发生改变，都会将其写入重做日志中。如果数据库重启，InnoDB会根据重做日志中的信息来初始化计数器的内存值。
+>
+> 最明显的区别就是重启后，删除现在最大的id那行数据后，再没有再次插入的情况下，重启系统。
+> mysql5.7会从现有表数据的最大id计数
+> mysql8.0会从删之前的最大id计数
+
+#### CHECK约束
+
+> MySQL5.7不支持。
+> 	MySQL5.7 可以使用check约束，但check约束对数据验证没有任何作用。添加数据时，没有任何错误或警告。
+>
+> MySQL 8.0中可以使用check约束了
