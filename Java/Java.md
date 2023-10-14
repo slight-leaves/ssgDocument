@@ -9,7 +9,7 @@
 > * [<font color="violet">第03章_流程控制语句.md</font>](./相关资料/第03章_流程控制语句/第03章_流程控制语句.md)
 > * [<font color="violet">第04章_IDEA的安装与使用（上）</font>](./相关资料/第04章_IDEA的安装与使用/第04章_IDEA的安装与使用（上）)
 > * [<font color="violet">第04章_IDEA的安装与使用（下）</font>](./相关资料/第04章_IDEA的安装与使用/第04章_IDEA的安装与使用（下）)
-> * [<font color="violet">IntelliJ IDEA 常用快捷键一览表.md</font>](./相关资料/第04章_IDEA的安装与使用/IntelliJ IDEA 常用快捷键一览表.md)
+> * [<font color="violet">IDEA常用快捷键一览表.md</font>](./相关资料/第04章_IDEA的安装与使用/IntelliJ IDEA 常用快捷键一览表.md)
 > * [<font color="violet">第05章_数组</font>](./相关资料/第05章_数组)
 > * [<font color="violet">第06章_面向对象编程（基础）</font>](./相关资料/第06章_面向对象编程（基础）)
 > * [<font color="violet">第07章_面向对象编程（进阶）</font>](./相关资料/第07章_面向对象编程（进阶）)
