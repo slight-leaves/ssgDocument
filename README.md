@@ -4,17 +4,18 @@
 
 ## Java
 
-> * [<font color="violet">JavaSE</font>](Java/Java.md)
-> * [<font color="violet">Git</font>](Git/Git.md)
+> * [<font color="violet">JavaSE</font>](ssgDocument/Java/Java.md)
+> * [<font color="violet">Git</font>](./Git/Git.md)
 
 ## Linux
 
-> * [<font color="violet">Linux+Shell</font>](Linux+Shell/Linux+Shell.md)
+> * [<font color="violet">Linux+Shell</font>](ssgDocument/Linux+Shell/Linux+Shell.md)
 
 ## MySQL
 
-> * [<font color="violet">MySQL</font>](MySQL/MySQL.md)
+> * [<font color="violet">MySQL</font>](ssgDocument/MySQL/MySQL.md)
 
 ## ElasticSearcj
 
-> * [<font color="violet">ElasticSearch</font>](ElasticSearch/ElasticSearch.md)
+> * [<font color="violet">ElasticSearch</font>](ssgDocument/ElasticSearch/ElasticSearch.md)
+
