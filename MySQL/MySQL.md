@@ -22,6 +22,7 @@
 > * [<font color="violet">第13章_约束.pdf</font>](./相关资料/第13章_约束.pdf)
 > * [<font color="violet">第14章_视图.pdf</font>](./相关资料/第14章_视图.pdf)
 > * [<font color="violet">第15章_存储过程与函数.pdf</font>](./相关资料/第15章_存储过程与函数.pdf)
+> * [<font color="violet">第16章_变量、流程控制与游标.pdf</font>](./相关资料/第16章_变量、流程控制与游标.pdf)
 
 ## 数据库概述
 
@@ -634,19 +635,15 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 >   * 如果等号两边的值、字符串或表达式中有一个为NULL，则比较结果为NULL。
 >
 >   * ```mysql
->    mysql> SELECT 1 = 1, 1 = '1', 1 = 0, 'a' = 'a', (5 + 3) = (2 + 6), '' = NULL , NULL =
->    NULL;
->    +-------+---------+-------+-----------+-------------------+-----------+-------------+
->    | 1 = 1 | 1 = '1' | 1 = 0 | 'a' = 'a' | (5 + 3) = (2 + 6) | '' = NULL | NULL = NULL |
->    +-------+---------+-------+-----------+-------------------+-----------+-------------+
->   	| 1 	| 1 	| 0		 | 1 		| 1 			| NULL 		| NULL 	|
->    +-------+---------+-------+-----------+-------------------+-----------+-------------+
->    1 row in set (0.00 sec)
->    ```
->  ```
-> 
->  ```
->
+>     mysql> SELECT 1 = 1, 1 = '1', 1 = 0, 'a' = 'a', (5 + 3) = (2 + 6), '' = NULL , NULL =
+>     NULL;
+>     +-------+---------+-------+-----------+-------------------+-----------+-------------+
+>     | 1 = 1 | 1 = '1' | 1 = 0 | 'a' = 'a' | (5 + 3) = (2 + 6) | '' = NULL | NULL = NULL |
+>     +-------+---------+-------+-----------+-------------------+-----------+-------------+
+>     | 1 	| 1 	| 0		 | 1 		| 1 			| NULL 		| NULL 	|
+>     +-------+---------+-------+-----------+-------------------+-----------+-------------+
+>     1 row in set (0.00 sec)
+>     ```
 > ```
 > 
 > ```
@@ -655,6 +652,12 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 > 
 > ```
 >
+> ```
+> 
+> ```
+>
+> ```
+> 
 > mysql> SELECT 1 = 2, 0 = 'abc', 1 = 'abc' FROM dual;
 > +-------+-----------+-----------+
 > | 1 = 2 | 0 = 'abc' | 1 = 'abc' |
@@ -663,38 +666,40 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 > +-------+-----------+-----------+
 > 1 row in set, 2 warnings (0.00 sec)
 > ```
+>
 > 
-> 
-> 
+>
 > ==安全等于运算符==
-> 
+>
 > * 与=并无多大区别，主要用于处理null值
-> 
+>
 > * ```mysql
-> mysql> SELECT 1 <=> NULL, NULL <=> NULL FROM DUAL;
-> +------------+---------------+
-> | 1 <=> NULL | NULL <=> NULL |
-> +------------+---------------+
-> |          0 |             1 |
-> +------------+---------------+
-> 1 row in set (0.00 sec)
-> ```
+>   mysql> SELECT 1 <=> NULL, NULL <=> NULL FROM DUAL;
+>   +------------+---------------+
+>   | 1 <=> NULL | NULL <=> NULL |
+>   +------------+---------------+
+>   |          0 |             1 |
+>   +------------+---------------+
+>   1 row in set (0.00 sec)
+>   ```
 > ```
 > 
 > ```
 >
->
+> ```
+> 
+> 
 > #练习：查询表中commission_pct为null的数据有哪些
 > SELECT last_name,salary,commission_pct
 > FROM employees
 > WHERE commission_pct <=> NULL;
 > ```
+>
 > 
-> 
-> 
+>
 > ==非符号运算符==
-> 
-> ​```mysql
+>
+> ```mysql
 > #① IS NULL \ IS NOT NULL \ ISNULL
 > #练习：查询表中commission_pct为null的数据有哪些
 > SELECT last_name,salary,commission_pct
@@ -704,8 +709,8 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 > SELECT last_name,salary,commission_pct
 > FROM employees
 > WHERE ISNULL(commission_pct);
-> 
-> 
+>
+>
 > #练习：查询表中commission_pct不为null的数据有哪些
 > SELECT last_name,salary,commission_pct
 > FROM employees
@@ -714,8 +719,8 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 > SELECT last_name,salary,commission_pct
 > FROM employees
 > WHERE NOT commission_pct <=> NULL;
-> 
-> 
+>
+>
 > #② LEAST() \ GREATEST 
 > SELECT LEAST('g','b','t','m'),GREATEST('g','b','t','m') FROM DUAL;
 > +------------------------+---------------------------+
@@ -724,54 +729,54 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 > | b                      | t                         |
 > +------------------------+---------------------------+
 > 1 row in set (0.00 sec)
+>
 > 
-> 
-> 
+>
 > #③ BETWEEN 条件下界1 AND 条件上界2  （查询条件1和条件2范围内的数据，包含边界）
 > #查询工资在6000 到 8000的员工信息
 > SELECT employee_id,last_name,salary
 > FROM employees
 > #where salary between 6000 and 8000;
 > WHERE salary >= 6000 && salary <= 8000;
-> 
+>
 > #交换6000 和 8000之后，查询不到数据
 > SELECT employee_id,last_name,salary
 > FROM employees
 > WHERE salary BETWEEN 8000 AND 6000;
-> 
+>
 > #查询工资不在6000 到 8000的员工信息
 > SELECT employee_id,last_name,salary
 > FROM employees
 > WHERE salary NOT BETWEEN 6000 AND 8000;
 > #where salary < 6000 or salary > 8000;
+>
 > 
-> 
-> 
+>
 > #④ in (set)\ not in (set)
 > #练习：查询部门为10,20,30部门的员工信息
 > SELECT last_name,salary,department_id
 > FROM employees
 > #where department_id = 10 or department_id = 20 or department_id = 30;
 > WHERE department_id IN (10,20,30);
-> 
+>
 > #练习：查询工资不是6000,7000,8000的员工信息
 > SELECT last_name,salary,department_id
 > FROM employees
 > WHERE salary NOT IN (6000,7000,8000);
-> 
-> 
+>
+>
 > #⑤ LIKE :模糊查询
 > # % : 代表不确定个数的字符 （0个，1个，或多个）
 > #练习：查询last_name中包含字符'a'的员工信息
 > SELECT last_name
 > FROM employees
 > WHERE last_name LIKE '%a%';
-> 
+>
 > #练习：查询last_name中以字符'a'开头的员工信息
 > SELECT last_name
 > FROM employees
 > WHERE last_name LIKE 'a%';
-> 
+>
 > #练习：查询last_name中包含字符'a'且包含字符'e'的员工信息
 > #写法1：
 > SELECT last_name
@@ -781,34 +786,36 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 > SELECT last_name
 > FROM employees
 > WHERE last_name LIKE '%a%e%' OR last_name LIKE '%e%a%';
-> 
+>
 > # _ ：代表一个不确定的字符
 > #练习：查询第3个字符是'a'的员工信息
 > SELECT last_name
 > FROM employees
 > WHERE last_name LIKE '__a%';
-> 
+>
 > #练习：查询第2个字符是_且第3个字符是'a'的员工信息
 > #需要使用转义字符: \ 
 > SELECT last_name
 > FROM employees
 > WHERE last_name LIKE '_\_a%';
-> 
+>
 > #或者  (了解)
 > SELECT last_name
 > FROM employees
 > WHERE last_name LIKE '_$_a%' ESCAPE '$';	#把$当作分隔符
-> 
-> 
+>
+>
 > #⑥ REGEXP \ RLIKE :正则表达式
 > SELECT 'shkstart' REGEXP '^shk', 'shkstart' REGEXP 't$', 'shkstart' REGEXP 'hk' FROM DUAL;
 > SELECT 'atguigu' REGEXP 'gu.gu','atguigu' REGEXP '[ab]' FROM DUAL;
+>
+>
+> ```
+> 
+> 
 > 
 > 
 > ```
->
-> 
->
 >
 > ```
 > 
@@ -4912,11 +4919,19 @@ DROP VIEW IF EXISTS vu_emp2,vu_emp3;
 
 ## 存储过程与函数
 
+> 阿里开发规范：
+>
+> 【强制】禁止使用存储过程，存储过程难以调试和扩展，更没有移植性。
+>
+> 一些公司要求，一些不要求，还是学一下吧。
+
+> 主要缺点：调试困难、可移植性差、不适合高并发的场景
+
+### 创建和使用存储过程
+
 > 存储过程就是就是一组经过`预先编译`的SQL语句的封装。
 >
 > 执行过程：存储过程预先存储在 MySQL 服务器上，需要执行的时候，客户端只需要向服务器端发出调用存储过程的命令，服务器端就可以把预先存储好的这一系列 SQL 语句全部执行。
-
-### 创建和使用存储过程
 
 #### 语法
 
@@ -5183,6 +5198,1367 @@ SET @empname := 'Abel';				#其中:表示  明确赋值符号的意思，这里�
 CALL show_mgr_name(@empname);
 
 SELECT @empname;
+```
+
+
+
+### 存储函数的使用
+
+> 存储函数，即MySQL定义函数。
+
+#### 语法
+
+```mysql
+CREATE FUNCTION 函数名(参数名 参数类型,...)
+RETURNS 返回值类型
+[characteristics ...]
+BEGIN
+	函数体 #函数体中肯定有 RETURN 语句
+	
+END
+```
+
+> * 参数列表：FUNCTION中总是默认为IN参数。（注：不同的是PROCEDURE支持指定参数为IN、OUT或INOUT）
+> * RETURNS type 语句表示函数返回数据的类型
+>   * RETURNS子句只能对FUNCTION做指定，对函数而言这==是强制的==。它用来指定函数的返回类型，而且==函数体必须包含一个 RETURN value 语句==。
+> * characteristic 创建函数时指定的对函数的约束。取值与创建存储过程时相同。
+> * 函数体也可以用BEGIN…END来表示SQL代码的开始和结束。如果函数体只有一条语句，也可以省略BEGIN…END。
+>
+> ```mysql
+> #存储函数的调用与普通函数并无多大区别。
+> SELECT 函数名(实参列表)
+> ```
+
+> 注意：
+>
+> 若在创建存储函数中报错“ `you might want to use the less safe log_bin_trust_function_creators variable` ”，有两种处理方法：
+>
+> * 方式一：加上必要的函数特性“`[NOT] DETERMINISTIC`”和“`{CONTAINS SQL | NO SQL | READS SQL DATA | MODIFIES SQL DATA}`”
+>
+> * 方式二：
+>
+>   ```mysql
+>   SET GLOBAL log_bin_trust_function_creators = 1;
+>   ```
+
+#### 对比存储函数和存储过程
+
+> ​	此外，**存储函数可以放在查询语句中使用，存储过程不行**。反之，存储过程的功能更加强大，包括能够执行对表的操作（比如创建表，删除表等）和事务操作，这些功能是存储函数不具备的。
+
+|          | **关键字** | **调用语法**     | **返回值**        | **应用场景**                     |
+| -------- | ---------- | ---------------- | ----------------- | -------------------------------- |
+| 存储过程 | PROCEDURE  | CALL 存储过程()  | 理解为有0个或多个 | 一般用于更新                     |
+| 存储函数 | FUNCTION   | SELECT 函数   () | 只能是一个        | 一般用于查询结果为一个值并返回时 |
+
+#### 示例
+
+```mysql
+# 举例1：创建存储函数，名称为email_by_name()，参数定义为空，
+#该函数查询Abel的email，并返回，数据类型为字符串型。
+
+DELIMITER //
+
+CREATE FUNCTION email_by_name()
+    RETURNS VARCHAR(25)
+    DETERMINISTIC
+    CONTAINS SQL
+    READS SQL DATA
+BEGIN
+    RETURN (SELECT email FROM employees WHERE last_name = 'Abel');
+END //
+
+DELIMITER ;
+
+#调用
+SELECT email_by_name();
+
+SELECT email, last_name
+FROM employees
+WHERE last_name = 'Abel';
+
+#举例2：创建存储函数，名称为email_by_id()，参数传入emp_id，该函数查询emp_id的email，
+#并返回，数据类型为字符串型。
+
+#创建函数前执行此语句，保证函数的创建会成功
+SET GLOBAL log_bin_trust_function_creators = 1;
+
+#声明函数
+
+DELIMITER //
+
+CREATE FUNCTION email_by_id(emp_id INT)
+    RETURNS VARCHAR(25)
+
+BEGIN
+    RETURN (SELECT email FROM employees WHERE employee_id = emp_id);
+
+END //
+
+DELIMITER ;
+
+
+#调用
+SELECT email_by_id(101);
+
+SET @emp_id := 102;
+SELECT email_by_id(@emp_id);
+
+
+#举例3：创建存储函数count_by_id()，参数传入dept_id，该函数查询dept_id部门的
+#员工人数，并返回，数据类型为整型。
+
+DELIMITER //
+
+CREATE FUNCTION count_by_id(dept_id INT)
+    RETURNS INT
+
+BEGIN
+    RETURN (SELECT COUNT(*) FROM employees WHERE department_id = dept_id);
+
+END //
+
+DELIMITER ;
+
+#调用
+SET @dept_id := 50;
+SELECT count_by_id(@dept_id);
+```
+
+### 存储过程和函数的查看、修改、删除
+
+#### 查看
+
+```mysql
+#方式1. 使用SHOW CREATE语句查看存储过程和函数的创建信息
+
+SHOW CREATE PROCEDURE show_mgr_name;
+
+SHOW CREATE FUNCTION count_by_id;
+
+#方式2. 使用SHOW STATUS语句查看存储过程和函数的状态信息
+
+SHOW PROCEDURE STATUS;
+
+SHOW PROCEDURE STATUS LIKE 'show_max_salary';
+
+SHOW FUNCTION STATUS LIKE 'email_by_id';
+
+#方式3.从information_schema.Routines表中查看存储过程和函数的信息
+
+SELECT *
+FROM information_schema.Routines
+WHERE ROUTINE_NAME = 'email_by_id'
+  AND ROUTINE_TYPE = 'FUNCTION';	#与平常不同的是FUNCTION必须大写，平常的话不会这么严谨
+
+SELECT *
+FROM information_schema.Routines
+WHERE ROUTINE_NAME = 'show_min_salary'
+  AND ROUTINE_TYPE = 'PROCEDURE';
+```
+
+#### 修改
+
+> 此处的修改，只修改相关特性。并不能修改其功能。（注：要像修改，只能先删再创建。）
+
+##### 语法
+
+```mysql
+ALTER {PROCEDURE | FUNCTION} 存储过程或函数的名 [characteristic ...]
+```
+
+> 其中，characteristic指定存储过程或函数的特性，其取值信息与创建存储过程、函数时的取值信息略有不同。
+>
+> ```mysql
+> { CONTAINS SQL | NO SQL | READS SQL DATA | MODIFIES SQL DATA }
+> | SQL SECURITY { DEFINER | INVOKER }
+> | COMMENT 'string'
+> ```
+
+> * `CONTAINS SQL` ，表示子程序==包含SQL语句，但不包含读或写数据的语句==。
+> * `NO SQL` ，表示子程序中==不包含SQL语句==。
+> * `READS SQL DATA` ，表示子程序中==包含读数据的语句==。
+> * `MODIFIES SQL DATA` ，表示子程序中包含写数据的语句。
+
+> * `SQL SECURITY { DEFINER | INVOKER }` ，指明谁有权限来执行。
+>   * `DEFINER`，表示只有定义者自己才能够执行。
+>   * `INVOKER` ，表示调用者可以执行。
+
+> * `COMMENT 'string'`，表示注释信息。
+
+##### 示例
+
+```mysql
+#4.存储过程、函数的修改
+ALTER PROCEDURE show_max_salary
+    SQL SECURITY INVOKER
+    COMMENT '查询最高工资';
+```
+
+#### 删除
+
+**语法**
+
+```mysql
+DROP {PROCEDURE | FUNCTION} [IF EXISTS] 存储过程或函数的名
+```
+
+**示例**
+
+```mysql
+
+DROP FUNCTION IF EXISTS count_by_id;
+
+DROP PROCEDURE IF EXISTS show_min_salary;
+```
+
+
+
+## 变量、流程控制、游标
+
+### 变量
+
+> https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html 查看MySQL文档的系统变量。
+
+![1697387906797](MySQL.assets/1697387906797.png)
+
+> * 全局系统变量针对于所有会话（连接）有效，但==不能跨重启==
+> * 会话系统变量仅针对于当前会话（连接）有效。会话期间，当前会话对某个会话系统变量值的修改，不会影响其他会话同一个会话系统变量的值。
+>
+> 会话1对某个全局系统变量值的修改会导致会话2中同一个全局系统变量值的修改。
+
+> 在MySQL中
+>
+> * 有些系统变量只能是全局的，例如 max_connections 用于限制服务器的最大连接数；
+> * 有些系统变量作用域既可以是全局又可以是会话，例如 character_set_client 用于设置客户端的字符集；
+> * 有些系统变量的作用域只能是当前会话，例如 pseudo_thread_id 用于标记当前会话的 MySQL 连接 ID。
+
+#### 系统变量
+
+> MySQL 中的系统变量以 两个“@” 开头，
+>
+> * 其中“@@global”仅用于标记全局系统变量。
+> * “@@session”仅用于标记会话系统变量。
+> * “@@”首先标记会话系统变量，如果会话系统变量不存在，则标记全局系统变量。
+
+##### 查看系统变量
+
+```mysql
+#1.2 查看系统变量
+#查询全局系统变量
+SHOW GLOBAL VARIABLES;
+#617
+#查询会话系统变量
+SHOW SESSION VARIABLES; #640
+
+SHOW VARIABLES;
+#默认查询的是会话系统变量
+
+#查询部分系统变量
+SHOW GLOBAL VARIABLES LIKE 'admin_%';
+
+SHOW VARIABLES LIKE 'character_%';
+```
+
+##### 查看指定系统变量
+
+```mysql
+#1.3 查看指定系统变量
+
+SELECT @@global.max_connections;
+SELECT @@global.character_set_client;
+
+#错误：
+SELECT @@global.pseudo_thread_id;
+
+#错误：
+SELECT @@session.max_connections;
+
+SELECT @@session.character_set_client;
+
+SELECT @@session.pseudo_thread_id;
+
+SELECT @@character_set_client;
+#先查询会话系统变量，再查询全局系统变量
+```
+
+##### 修改系统变量的值
+
+> 方式1：修改MySQL 配置文件 ，继而修改MySQL系统变量的值（该方法需要重启MySQL服务）
+>
+> 方式2：在MySQL服务运行期间，使用“set”命令重新设置系统变量的值
+
+```mysql
+#1.4 修改系统变量的值
+#全局系统变量：
+#方式1：
+SET @@global.max_connections = 161;
+#方式2：
+SET GLOBAL max_connections = 171;
+
+#针对于当前的数据库实例是有效的，一旦重启mysql服务，就失效了。
+
+
+#会话系统变量：
+#方式1：
+SET @@session.character_set_client = 'gbk';
+#方式2：
+SET SESSION character_set_client = 'gbk';
+
+#针对于当前会话是有效的，一旦结束会话，重新建立起新的会话，就失效了。
+```
+
+#### 用户变量
+
+> ① 用户变量 ： 会话用户变量 vs 局部变量
+>
+> ② 会话用户变量：使用"@"开头，作用域为当前会话。
+>
+> ③ 局部变量：只能使用在存储过程和存储函数中的。
+>
+> |              | 作用域              | 定义位置            | 语法                     |
+> | ------------ | ------------------- | ------------------- | ------------------------ |
+> | 会话用户变量 | 当前会话            | 会话的任何地方      | 加@符号，不用指定类型    |
+> | 局部变量     | 定义它的BEGIN END中 | BEGIN END的第一句话 | 一般不用加@,需要指定类型 |
+>
+> 
+
+##### 会话用户变量
+
+```mysql
+
+#① 变量的声明和赋值：
+#方式1：“=”或“:=”
+SET @用户变量 = 值;
+SET @用户变量 := 值;
+
+#方式2：“:=” 或 INTO关键字
+SELECT @用户变量 := 表达式 [FROM 等子句];
+SELECT 表达式 INTO @用户变量  [FROM 等子句];
+
+#② 使用
+SELECT @变量名
+```
+
+```mysql
+#测试：
+#方式1：
+SET @m1 = 1;
+SET @m2 := 2;
+SET @sum := @m1 + @m2;
+
+SELECT @sum;
+
+#方式2：
+SELECT @count := COUNT(*)
+FROM employees;
+
+SELECT @count;
+
+SELECT AVG(salary)
+INTO @avg_sal
+FROM employees;
+
+SELECT @avg_sal;
+```
+
+##### 局部变量
+
+```mysql
+/*
+1、局部变量必须满足：
+① 使用DECLARE声明
+② 声明并使用在BEGIN ... END 中 （使用在存储过程、函数中）
+③ DECLARE的方式声明的局部变量必须声明在BEGIN中的首行的位置。
+
+2、声明格式：
+DECLARE 变量名 类型 [default 值];  # 如果没有DEFAULT子句，初始值为NULL
+
+3、赋值：
+方式1：
+SET 变量名=值;
+SET 变量名:=值;
+
+方式2：
+SELECT 字段名或表达式 INTO 变量名 FROM 表;
+
+4、使用
+SELECT 局部变量名;
+*/
+```
+
+```mysql
+#举例：
+DELIMITER //
+
+CREATE PROCEDURE test_var()
+
+BEGIN
+    #1、声明局部变量
+    DECLARE a INT DEFAULT 0;
+    DECLARE b INT;
+    #DECLARE a,b INT DEFAULT 0;
+    DECLARE emp_name VARCHAR(25);
+
+    #2、赋值
+    SET a = 1;
+    SET b := 2;
+
+    SELECT last_name INTO emp_name FROM employees WHERE employee_id = 101;
+
+    #3、使用
+    SELECT a, b, emp_name;
+END //
+
+DELIMITER ;
+
+#调用存储过程
+CALL test_var();
+
+#举例1：声明局部变量，并分别赋值为employees表中employee_id为102的last_name和salary
+
+DELIMITER //
+
+CREATE PROCEDURE test_pro()
+BEGIN
+    #声明
+    DECLARE emp_name VARCHAR(25);
+    DECLARE sal DOUBLE(10, 2) DEFAULT 0.0;
+    #赋值
+    SELECT last_name, salary
+    INTO emp_name,sal
+    FROM employees
+    WHERE employee_id = 102;
+    #使用
+    SELECT emp_name, sal;
+
+END //
+
+DELIMITER ;
+
+#调用存储过程
+
+CALL test_pro();
+
+SELECT last_name, salary
+FROM employees
+WHERE employee_id = 102;
+
+#举例2：声明两个变量，求和并打印 （分别使用会话用户变量、局部变量的方式实现）
+
+#方式1：使用会话用户变量
+SET @v1 = 10;
+SET @v2 := 20;
+SET @result := @v1 + @v2;
+
+#查看
+SELECT @result;
+
+#方式2：使用局部变量
+DELIMITER //
+
+CREATE PROCEDURE add_value()
+BEGIN
+    #声明
+    DECLARE value1,value2,sum_val INT;
+
+    #赋值
+    SET value1 = 10;
+    SET value2 := 100;
+
+    SET sum_val = value1 + value2;
+    #使用
+    SELECT sum_val;
+END //
+
+DELIMITER ;
+
+#调用存储过程
+CALL add_value();
+
+#举例3：创建存储过程“different_salary”查询某员工和他领导的薪资差距，并用IN参数emp_id接收员工id，
+#用OUT参数dif_salary输出薪资差距结果。
+
+DELIMITER //
+
+CREATE PROCEDURE different_salary(IN emp_id INT, OUT dif_salary DOUBLE)
+BEGIN
+    #分析：查询出emp_id员工的工资;查询出emp_id员工的管理者的id;查询管理者id的工资;计算两个工资的差值
+
+    #声明变量
+    DECLARE emp_sal DOUBLE DEFAULT 0.0; #记录员工的工资
+    DECLARE mgr_sal DOUBLE DEFAULT 0.0; #记录管理者的工资
+
+    DECLARE mgr_id INT DEFAULT 0;
+    #记录管理者的id
+
+
+    #赋值
+    SELECT salary INTO emp_sal FROM employees WHERE employee_id = emp_id;
+
+    SELECT manager_id INTO mgr_id FROM employees WHERE employee_id = emp_id;
+    SELECT salary INTO mgr_sal FROM employees WHERE employee_id = mgr_id;
+
+    SET dif_salary = mgr_sal - emp_sal;
+
+END //
+DELIMITER ;
+
+#调用存储过程
+SET @emp_id := 103;
+SET @dif_sal := 0;
+CALL different_salary(@emp_id, @dif_sal);
+
+SELECT @dif_sal;
+
+
+SELECT *
+FROM employees;
+```
+
+
+
+### 定义条件与处理程序
+
+> `定义条件`：事先定义程序执行过程中可能遇到的问题。
+>
+> `处理程序`：定义了在遇到问题时应当采取的处理方式，并且==保证存储过程或函数在遇到警告或错误时能继续执行==。
+>
+> 定义条件和处理程序在存储过程、存储函数中都是支持的。
+
+#### 错误演示
+
+```mysql
+#2.1 错误演示：
+
+#错误代码： 1364
+#Field 'email' doesn't have a default value
+INSERT INTO employees(last_name)
+VALUES ('Tom');
+
+DESC employees;
+
+#错误演示：
+DELIMITER //
+
+CREATE PROCEDURE UpdateDataNoCondition()
+BEGIN
+    SET @x = 1;
+    UPDATE employees SET email = NULL WHERE last_name = 'Abel';
+    SET @x = 2;
+    UPDATE employees SET email = 'aabbel' WHERE last_name = 'Abel';
+    SET @x = 3;
+END //
+
+DELIMITER ;
+
+#调用存储过程
+#错误代码： 1048
+#Column 'email' cannot be null
+CALL UpdateDataNoCondition();
+
+SELECT @x;
+```
+
+#### 定义条件
+
+> ​	定义条件就是给MySQL中的错误码命名，这有助于存储的程序代码更清晰。它将一个`错误名字`和`指定的错误条件`关联起来。这个名字可以随后被用在定义处理程序的`DECLARE HANDLER`语句中。
+
+##### 语法
+
+```mysql
+DECLARE 错误名称 CONDITION FOR 错误码（或错误条件）
+```
+
+> 错误码的说明：
+>
+> * `MySQL_error_code` 和 `sqlstate_value`都可以表示MySQL的错误。
+>   * MySQL_error_code是数值类型错误代码。
+>   * sqlstate_value是长度为5的字符串类型错误代码。
+>
+> 例如：
+> 在ERROR 1418 (HY000)中，1418是MySQL_error_code，'HY000'是sqlstate_value。
+> 在ERROR 1142（42000）中，1142是MySQL_error_code，'42000'是sqlstate_value。
+
+##### 示例
+
+```mysql
+#举例1：定义“Field_Not_Be_NULL”错误名与MySQL中违反非空约束的错误类型
+#是“ERROR 1048 (23000)”对应。
+#方式1：使用MySQL_error_code
+DECLARE Field_Not_Be_NULL CONDITION FOR 1048;
+
+#方式2：使用sqlstate_value
+DECLARE Field_Not_Be_NULL CONDITION FOR SQLSTATE '23000';
+
+#举例2：定义"ERROR 1148(42000)"错误，名称为command_not_allowed。
+#方式1：使用MySQL_error_code
+DECLARE command_not_allowed CONDITION FOR 1148;
+
+#方式2：使用sqlstate_value
+DECLARE command_not_allowed CONDITION FOR SQLSTATE '42000';
+```
+
+#### 定义处理程序
+
+> 可以为SQL执行过程中发生的某种类型的错误，定义特殊的处理程序。
+
+##### 语法
+
+```mysql
+DECLARE 处理方式 HANDLER FOR 错误类型 处理语句
+```
+
+> 处理方式：处理方式有3个取值：CONTINUE、EXIT、UNDO。
+>
+> * `CONTINUE` ：表示遇到错误不处理，继续执行。
+> * `EXIT` ：表示遇到错误马上退出。
+> * `UNDO` ：表示遇到错误后撤回之前的操作。==MySQL中暂时不支持这样的操作==。
+
+> 错误类型：（即条件）可以有如下取值：
+>
+> * `SQLSTATE '字符串错误码'` ：表示长度为5的sqlstate_value类型的错误代码；
+> * `MySQL_error_code` ：匹配数值类型错误代码；
+> * `错误名称` ：表示DECLARE ... CONDITION定义的错误条件名称。
+> * `SQLWARNING` ：匹配所有以01开头的SQLSTATE错误代码；
+> * `NOT FOUND` ：匹配所有以02开头的SQLSTATE错误代码；
+> * `SQLEXCEPTION` ：匹配所有没有被SQLWARNING或NOT FOUND捕获的SQLSTATE错误代码；
+
+> 处理语句：如果出现上述条件之一，则采用对应的处理方式，并执行指定的处理语句。语句可以是像`SET 变量 = 值`这样的简单语句，也可以是使用`BEGIN ... END`编写的复合语句。
+
+##### 示例
+
+```mysql
+#2.3 定义处理程序
+#格式：DECLARE 处理方式 HANDLER FOR 错误类型 处理语句
+
+#举例：
+#方法1：捕获sqlstate_value
+DECLARE CONTINUE
+HANDLER FOR SQLSTATE '42S02' SET @info = 'NO_SUCH_TABLE';
+
+#方法2：捕获mysql_error_value
+DECLARE CONTINUE
+HANDLER FOR 1146 SET @info = 'NO_SUCH_TABLE';
+
+#方法3：先定义条件，再调用
+DECLARE no_such_table CONDITION FOR 1146;
+DECLARE CONTINUE
+HANDLER FOR no_such_table SET @info = 'NO_SUCH_TABLE';
+
+#方法4：使用SQLWARNING
+DECLARE EXIT
+HANDLER FOR SQLWARNING SET @info = 'ERROR';
+
+#方法5：使用NOT FOUND
+DECLARE EXIT
+HANDLER FOR NOT FOUND SET @info = 'NO_SUCH_TABLE';
+
+#方法6：使用SQLEXCEPTION
+DECLARE EXIT
+HANDLER FOR SQLEXCEPTION SET @info = 'ERROR';
+```
+
+#### 案例
+
+```mysql
+DROP PROCEDURE UpdateDataNoCondition;
+
+#重新定义存储过程，体现错误的处理程序
+DELIMITER //
+
+CREATE PROCEDURE UpdateDataNoCondition()
+BEGIN
+    #声明处理程序
+    #处理方式1：
+    DECLARE CONTINUE HANDLER FOR 1048 SET @prc_value = -1;
+    #处理方式2：
+    #DECLARE CONTINUE HANDLER FOR sqlstate '23000' SET @prc_value = -1;
+
+    SET @x = 1;
+    UPDATE employees SET email = NULL WHERE last_name = 'Abel';
+    SET @x = 2;
+    UPDATE employees SET email = 'aabbel' WHERE last_name = 'Abel';
+    SET @x = 3;
+END //
+
+DELIMITER ;
+
+#调用存储过程：
+CALL UpdateDataNoCondition();
+
+#查看变量：
+SELECT @x, @prc_value;
+
+#2.5 再举一个例子：
+#创建一个名称为“InsertDataWithCondition”的存储过程
+
+#① 准备工作
+CREATE TABLE departments
+AS
+SELECT *
+FROM zfp.`departments`;
+
+DESC departments;
+
+ALTER TABLE departments
+    ADD CONSTRAINT uk_dept_name UNIQUE (department_id);
+
+#② 定义存储过程：
+DELIMITER //
+
+CREATE PROCEDURE InsertDataWithCondition()
+BEGIN
+    SET @x = 1;
+    INSERT INTO departments(department_name) VALUES ('测试');
+    SET @x = 2;
+    INSERT INTO departments(department_name) VALUES ('测试');
+    SET @x = 3;
+END //
+
+DELIMITER ;
+
+#③ 调用
+CALL InsertDataWithCondition();
+
+SELECT @x;
+#2
+
+#④ 删除此存储过程
+DROP PROCEDURE IF EXISTS InsertDataWithCondition;
+
+#⑤ 重新定义存储过程（考虑到错误的处理程序）
+
+DELIMITER //
+
+CREATE PROCEDURE InsertDataWithCondition()
+BEGIN
+
+    #处理程序
+    #方式1：
+    #declare exit handler for 1062 set @pro_value = -1;
+    #方式2：
+    #declare exit handler for sqlstate '23000' set @pro_value = -1;
+    #方式3：
+    #定义条件
+    DECLARE duplicate_entry CONDITION FOR 1062;
+    DECLARE EXIT HANDLER FOR duplicate_entry SET @pro_value = -1;
+
+    SET @x = 1;
+    INSERT INTO departments(department_name) VALUES ('测试');
+    SET @x = 2;
+    INSERT INTO departments(department_name) VALUES ('测试');
+    SET @x = 3;
+END //
+
+DELIMITER ;
+
+#调用
+CALL InsertDataWithCondition();
+
+SELECT @x, @pro_value;	#2、 -1
+```
+
+### 流程控制
+
+> * 条件判断语句 ：IF 语句和 CASE 语句
+> * 循环语句 ：LOOP、WHILE 和 REPEAT 语句
+> * 跳转语句 ：ITERATE 和 LEAVE 语句
+
+#### 分支结构之 IF
+
+##### 语法
+
+```mysql
+IF 表达式1 THEN 操作1
+[ELSEIF 表达式2 THEN 操作2]……
+[ELSE 操作N]
+END IF
+```
+
+##### 示例
+
+```mysql
+#3.1 分支结构之 IF
+
+#举例1
+
+DELIMITER //
+
+CREATE PROCEDURE test_if()
+
+BEGIN
+    #情况1：
+    #声明局部变量
+    #declare stu_name varchar(15);
+
+    #if stu_name is null
+    #	then select 'stu_name is null';
+    #end if;
+
+    #情况2：二选一
+    #declare email varchar(25) default 'aaa';
+
+    #if email is null
+    #	then select 'email is null';
+    #else
+    #	select 'email is not null';
+    #end if;
+
+    #情况3：多选一
+    DECLARE age INT DEFAULT 20;
+
+    IF age > 40
+    THEN
+        SELECT '中老年';
+    ELSEIF age > 18
+    THEN
+        SELECT '青壮年';
+    ELSEIF age > 8
+    THEN
+        SELECT '青少年';
+    ELSE
+        SELECT '婴幼儿';
+    END IF;
+
+
+END //
+
+DELIMITER ;
+
+#调用
+CALL test_if();
+
+DROP PROCEDURE test_if;
+
+#举例2：声明存储过程“update_salary_by_eid1”，定义IN参数emp_id，输入员工编号。
+#判断该员工薪资如果低于8000元并且入职时间超过5年，就涨薪500元；否则就不变。
+
+DELIMITER //
+
+CREATE PROCEDURE update_salary_by_eid1(IN emp_id INT)
+BEGIN
+    #声明局部变量
+    DECLARE emp_sal DOUBLE; #记录员工的工资
+    DECLARE hire_year DOUBLE;
+    #记录员工入职公司的年头
+
+
+    #赋值
+    SELECT salary INTO emp_sal FROM employees WHERE employee_id = emp_id;
+
+    SELECT DATEDIFF(CURDATE(), hire_date) / 365 INTO hire_year FROM employees WHERE employee_id = emp_id;
+
+    #判断
+    IF emp_sal < 8000 AND hire_year >= 5
+    THEN
+        UPDATE employees SET salary = salary + 500 WHERE employee_id = emp_id;
+    END IF;
+END //
+
+DELIMITER ;
+
+#调用存储过程
+CALL update_salary_by_eid1(104);
+
+SELECT DATEDIFF(CURDATE(), hire_date) / 365, employee_id, salary
+FROM employees
+WHERE salary < 8000
+  AND DATEDIFF(CURDATE(), hire_date) / 365 >= 5;
+
+DROP PROCEDURE update_salary_by_eid1;
+
+
+#举例3：声明存储过程“update_salary_by_eid2”，定义IN参数emp_id，输入员工编号。
+#判断该员工薪资如果低于9000元并且入职时间超过5年，就涨薪500元；否则就涨薪100元。
+
+DELIMITER //
+
+CREATE PROCEDURE update_salary_by_eid2(IN emp_id INT)
+BEGIN
+    #声明局部变量
+    DECLARE emp_sal DOUBLE; #记录员工的工资
+    DECLARE hire_year DOUBLE;
+    #记录员工入职公司的年头
+
+
+    #赋值
+    SELECT salary INTO emp_sal FROM employees WHERE employee_id = emp_id;
+
+    SELECT DATEDIFF(CURDATE(), hire_date) / 365 INTO hire_year FROM employees WHERE employee_id = emp_id;
+
+    #判断
+    IF emp_sal < 9000 AND hire_year >= 5
+    THEN
+        UPDATE employees SET salary = salary + 500 WHERE employee_id = emp_id;
+    ELSE
+        UPDATE employees SET salary = salary + 100 WHERE employee_id = emp_id;
+    END IF;
+END //
+
+DELIMITER ;
+
+#调用
+CALL update_salary_by_eid2(103);
+CALL update_salary_by_eid2(104);
+
+SELECT *
+FROM employees
+WHERE employee_id IN (103, 104);
+
+
+#举例4：声明存储过程“update_salary_by_eid3”，定义IN参数emp_id，输入员工编号。
+#判断该员工薪资如果低于9000元，就更新薪资为9000元；薪资如果大于等于9000元且
+#低于10000的，但是奖金比例为NULL的，就更新奖金比例为0.01；其他的涨薪100元。
+
+DELIMITER //
+CREATE PROCEDURE update_salary_by_eid3(IN emp_id INT)
+BEGIN
+    #声明变量
+    DECLARE emp_sal DOUBLE; #记录员工工资
+    DECLARE bonus DOUBLE;
+    #记录员工的奖金率
+
+    #赋值
+    SELECT salary INTO emp_sal FROM employees WHERE employee_id = emp_id;
+    SELECT commission_pct INTO bonus FROM employees WHERE employee_id = emp_id;
+
+
+    #判断
+    IF emp_sal < 9000
+    THEN
+        UPDATE employees SET salary = 9000 WHERE employee_id = emp_id;
+    ELSEIF emp_sal < 10000 AND bonus IS NULL
+    THEN
+        UPDATE employees SET commission_pct = 0.01 WHERE employee_id = emp_id;
+    ELSE
+        UPDATE employees SET salary = salary + 100 WHERE employee_id = emp_id;
+    END IF;
+
+END //
+
+
+DELIMITER ;
+
+#调用
+CALL update_salary_by_eid3(102);
+CALL update_salary_by_eid3(103);
+CALL update_salary_by_eid3(104);
+
+SELECT *
+FROM employees
+WHERE employee_id IN (102, 103, 104);
+```
+
+#### 分支结构之 CASE
+
+##### 语法结构
+
+```mysql
+#情况一：类似于switch
+CASE 表达式
+WHEN 值1 THEN 结果1或语句1(如果是语句，需要加分号)
+WHEN 值2 THEN 结果2或语句2(如果是语句，需要加分号)
+...
+ELSE 结果n或语句n(如果是语句，需要加分号)
+END [case]（如果是放在begin end中需要加上case，如果放在select后面不需要）
+
+
+
+#情况二：类似于多重if
+CASE
+WHEN 条件1 THEN 结果1或语句1(如果是语句，需要加分号)
+WHEN 条件2 THEN 结果2或语句2(如果是语句，需要加分号)
+...
+ELSE 结果n或语句n(如果是语句，需要加分号)
+END [case]（如果是放在begin end中需要加上case，如果放在select后面不需要）
+```
+
+##### 示例
+
+```mysql
+##3.2 分支结构之case
+
+#举例1:基本使用
+DELIMITER //
+CREATE PROCEDURE test_case()
+BEGIN
+    #演示1：case ... when ...then ...
+    /*
+    declare var int default 2;
+
+    case var
+        when 1 then select 'var = 1';
+        when 2 then select 'var = 2';
+        when 3 then select 'var = 3';
+        else select 'other value';
+    end case;
+    */
+    #演示2：case when ... then ....
+    DECLARE var1 INT DEFAULT 10;
+    CASE
+        WHEN var1 >= 100 THEN SELECT '三位数';
+        WHEN var1 >= 10 THEN SELECT '两位数';
+        ELSE SELECT '个数位';
+        END CASE;
+
+END //
+
+DELIMITER ;
+
+#调用
+CALL test_case();
+
+DROP PROCEDURE test_case;
+
+#举例2：声明存储过程“update_salary_by_eid4”，定义IN参数emp_id，输入员工编号。
+#判断该员工薪资如果低于9000元，就更新薪资为9000元；薪资大于等于9000元且低于10000的，
+#但是奖金比例为NULL的，就更新奖金比例为0.01；其他的涨薪100元。
+
+DELIMITER //
+CREATE PROCEDURE update_salary_by_eid4(IN emp_id INT)
+BEGIN
+    #局部变量的声明
+    DECLARE emp_sal DOUBLE; #记录员工的工资
+    DECLARE bonus DOUBLE;
+    #记录员工的奖金率
+
+    #局部变量的赋值
+    SELECT salary INTO emp_sal FROM employees WHERE employee_id = emp_id;
+    SELECT commission_pct INTO bonus FROM employees WHERE employee_id = emp_id;
+
+    CASE
+        WHEN emp_sal < 9000 THEN UPDATE employees SET salary = 9000 WHERE employee_id = emp_id;
+        WHEN emp_sal < 10000 AND bonus IS NULL THEN UPDATE employees
+                                                    SET commission_pct = 0.01
+                                                    WHERE employee_id = emp_id;
+        ELSE UPDATE employees SET salary = salary + 100 WHERE employee_id = emp_id;
+        END CASE;
+
+
+END //
+
+DELIMITER ;
+
+#调用
+CALL update_salary_by_eid4(103);
+CALL update_salary_by_eid4(104);
+CALL update_salary_by_eid4(105);
+
+SELECT *
+FROM employees
+WHERE employee_id IN (103, 104, 105);
+
+#举例3：声明存储过程update_salary_by_eid5，定义IN参数emp_id，输入员工编号。
+#判断该员工的入职年限，如果是0年，薪资涨50；如果是1年，薪资涨100；
+#如果是2年，薪资涨200；如果是3年，薪资涨300；如果是4年，薪资涨400；其他的涨薪500。
+
+DELIMITER //
+
+CREATE PROCEDURE update_salary_by_eid5(IN emp_id INT)
+BEGIN
+    #声明局部变量
+    DECLARE hire_year INT;
+    #记录员工入职公司的总时间（单位：年）
+
+    #赋值
+    SELECT ROUND(DATEDIFF(CURDATE(), hire_date) / 365)
+    INTO hire_year
+    FROM employees
+    WHERE employee_id = emp_id;
+
+    #判断
+    CASE hire_year
+        WHEN 0 THEN UPDATE employees SET salary = salary + 50 WHERE employee_id = emp_id;
+        WHEN 1 THEN UPDATE employees SET salary = salary + 100 WHERE employee_id = emp_id;
+        WHEN 2 THEN UPDATE employees SET salary = salary + 200 WHERE employee_id = emp_id;
+        WHEN 3 THEN UPDATE employees SET salary = salary + 300 WHERE employee_id = emp_id;
+        WHEN 4 THEN UPDATE employees SET salary = salary + 400 WHERE employee_id = emp_id;
+        ELSE UPDATE employees SET salary = salary + 500 WHERE employee_id = emp_id;
+        END CASE;
+END //
+
+DELIMITER ;
+
+#调用
+CALL update_salary_by_eid5(101);
+
+
+SELECT *
+FROM employees;
+
+DROP PROCEDURE update_salary_by_eid5;
+```
+
+#### 循环结构之LOOP
+
+> LOOP一般搭配LEAVE子句使用，LEAVE子句一般用于跳出循环使用。
+
+##### 语法
+
+```mysql
+[loop_label:] LOOP			#其中，loop_label表示LOOP语句的标注名称，该参数可以省略。
+	循环执行的语句
+END LOOP [loop_label]
+```
+
+##### 使用
+
+```mysql
+#举例1：
+
+DELIMITER //
+CREATE PROCEDURE test_loop()
+BEGIN
+    #声明局部变量
+    DECLARE num INT DEFAULT 1;
+
+    loop_label:
+    LOOP
+        #重新赋值
+        SET num = num + 1;
+
+        #可以考虑某个代码程序反复执行。（略）
+
+        IF num >= 10 THEN
+            LEAVE loop_label;
+        END IF;
+    END LOOP loop_label;
+
+    #查看num
+    SELECT num;
+
+END //
+
+DELIMITER ;
+
+#调用
+CALL test_loop();
+
+
+#举例2：当市场环境变好时，公司为了奖励大家，决定给大家涨工资。
+#声明存储过程“update_salary_loop()”，声明OUT参数num，输出循环次数。
+#存储过程中实现循环给大家涨薪，薪资涨为原来的1.1倍。直到全公司的平
+#均薪资达到12000结束。并统计循环次数。
+
+
+DELIMITER //
+
+CREATE PROCEDURE update_salary_loop(OUT num INT)
+BEGIN
+    #声明变量
+    DECLARE avg_sal DOUBLE; #记录员工的平均工资
+
+    DECLARE loop_count INT DEFAULT 0;
+    #记录循环的次数
+
+    #① 初始化条件
+    #获取员工的平均工资
+    SELECT AVG(salary) INTO avg_sal FROM employees;
+
+    loop_lab:
+    LOOP
+        #② 循环条件
+        #结束循环的条件
+        IF avg_sal >= 12000
+        THEN
+            LEAVE loop_lab;
+        END IF;
+
+        #③ 循环体
+        #如果低于12000，更新员工的工资
+        UPDATE employees SET salary = salary * 1.1;
+
+        #④ 迭代条件
+        #更新avg_sal变量的值
+        SELECT AVG(salary) INTO avg_sal FROM employees;
+
+        #记录循环次数
+        SET loop_count = loop_count + 1;
+
+    END LOOP loop_lab;
+
+    #给num赋值
+    SET num = loop_count;
+
+END //
+
+
+DELIMITER ;
+
+SELECT AVG(salary)
+FROM employees;
+
+CALL update_salary_loop(@num);
+SELECT @num;
+```
+
+#### 循环结构之WHILE
+
+##### 语法
+
+```mysql
+[while_label:] WHILE 循环条件 DO	#while_label为WHILE语句的标注名称
+循环体
+END WHILE [while_label];
+```
+
+##### 示例
+
+```mysql
+#举例1：
+DELIMITER //
+CREATE PROCEDURE test_while()
+
+BEGIN
+    #初始化条件
+    DECLARE num INT DEFAULT 1;
+    #循环条件
+    WHILE num <= 10
+        DO
+        #循环体（略）
+
+        #迭代条件
+            SET num = num + 1;
+        END WHILE;
+
+    #查询
+    SELECT num;
+
+END //
+
+DELIMITER ;
+
+#调用
+CALL test_while();
+
+#举例2：市场环境不好时，公司为了渡过难关，决定暂时降低大家的薪资。
+#声明存储过程“update_salary_while()”，声明OUT参数num，输出循环次数。
+#存储过程中实现循环给大家降薪，薪资降为原来的90%。直到全公司的平均薪资
+#达到5000结束。并统计循环次数。
+
+DELIMITER //
+CREATE PROCEDURE update_salary_while(OUT num INT)
+
+BEGIN
+    #声明变量
+    DECLARE avg_sal DOUBLE; #记录平均工资
+    DECLARE while_count INT DEFAULT 0;
+    #记录循环次数
+
+    #赋值
+    SELECT AVG(salary) INTO avg_sal FROM employees;
+
+    WHILE avg_sal > 5000
+        DO
+            UPDATE employees SET salary = salary * 0.9;
+            SET while_count = while_count + 1;
+
+            SELECT AVG(salary) INTO avg_sal FROM employees;
+
+        END WHILE;
+
+    #给num赋值
+    SET num = while_count;
+
+
+END //
+
+DELIMITER ;
+
+#调用
+CALL update_salary_while(@num);
+
+SELECT @num;
+
+SELECT AVG(salary)
+FROM employees;
+```
+
+#### 循环结构之REPEAT
+
+> REPEAT 循环首先会执行一次循环，然后再在 UNTIL 中进行表达式的判断。
+>
+> 类似于java中的do-while
+
+##### 语法
+
+```mysql
+[repeat_label:] REPEAT		#repeat_label为REPEAT语句的标注名称，该参数可以省略
+	循环体的语句
+UNTIL 结束循环的条件表达式		#注。这里别加分号，别写错了
+END REPEAT [repeat_label]
+```
+
+##### 示例
+
+```mysql
+#举例1：
+
+DELIMITER //
+
+CREATE PROCEDURE test_repeat()
+BEGIN
+    #声明变量
+    DECLARE num INT DEFAULT 1;
+
+    REPEAT
+        SET num = num + 1;
+    UNTIL num >= 10		#注。这里别加分号，别写错了
+        END REPEAT;
+
+    #查看
+    SELECT num;
+
+END //
+
+
+DELIMITER ;
+
+#调用
+CALL test_repeat();
+
+#举例2：当市场环境变好时，公司为了奖励大家，决定给大家涨工资。
+#声明存储过程“update_salary_repeat()”，声明OUT参数num，输出循环次数。
+#存储过程中实现循环给大家涨薪，薪资涨为原来的1.15倍。直到全公司的平均
+#薪资达到13000结束。并统计循环次数。
+
+
+DELIMITER //
+CREATE PROCEDURE update_salary_repeat(OUT num INT)
+
+BEGIN
+    #声明变量
+    DECLARE avg_sal DOUBLE; #记录平均工资
+    DECLARE repeat_count INT DEFAULT 0;
+    #记录循环次数
+
+    #赋值
+    SELECT AVG(salary) INTO avg_sal FROM employees;
+
+    REPEAT
+        UPDATE employees SET salary = salary * 1.15;
+        SET repeat_count = repeat_count + 1;
+
+        SELECT AVG(salary) INTO avg_sal FROM employees;
+
+    UNTIL avg_sal >= 13000
+        END REPEAT;
+
+    #给num赋值
+    SET num = repeat_count;
+
+
+END //
+
+DELIMITER ;
+
+#调用
+CALL update_salary_repeat(@num);
+SELECT @num;
+
+
+SELECT AVG(salary)
+FROM employees;
 ```
 
 
