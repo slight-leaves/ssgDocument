@@ -1052,7 +1052,7 @@ BEGIN
     WHILE TRUE
         DO #② 循环条件
 
-    #③ 循环体
+            #③ 循环体
             IF avg_sal <= 10000 THEN
                 LEAVE while_label;
             END IF;

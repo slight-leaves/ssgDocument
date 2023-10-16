@@ -23,6 +23,8 @@
 > * [<font color="violet">第14章_视图.pdf</font>](./相关资料/第14章_视图.pdf)
 > * [<font color="violet">第15章_存储过程与函数.pdf</font>](./相关资料/第15章_存储过程与函数.pdf)
 > * [<font color="violet">第16章_变量、流程控制与游标.pdf</font>](./相关资料/第16章_变量、流程控制与游标.pdf)
+> * [<font color="violet">第17章_触发器.pdf</font>](./相关资料/第17章_触发器.pdf)
+> * [<font color="violet">第18章_MySQL8其它新特性.pdf</font>](./相关资料/第18章_MySQL8其它新特性.pdf)
 
 ## 数据库概述
 
@@ -635,18 +637,18 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 >   * 如果等号两边的值、字符串或表达式中有一个为NULL，则比较结果为NULL。
 >
 >   * ```mysql
->     mysql> SELECT 1 = 1, 1 = '1', 1 = 0, 'a' = 'a', (5 + 3) = (2 + 6), '' = NULL , NULL =
->     NULL;
->     +-------+---------+-------+-----------+-------------------+-----------+-------------+
->     | 1 = 1 | 1 = '1' | 1 = 0 | 'a' = 'a' | (5 + 3) = (2 + 6) | '' = NULL | NULL = NULL |
->     +-------+---------+-------+-----------+-------------------+-----------+-------------+
->     | 1 	| 1 	| 0		 | 1 		| 1 			| NULL 		| NULL 	|
->     +-------+---------+-------+-----------+-------------------+-----------+-------------+
->     1 row in set (0.00 sec)
->     ```
-> ```
+>    mysql> SELECT 1 = 1, 1 = '1', 1 = 0, 'a' = 'a', (5 + 3) = (2 + 6), '' = NULL , NULL =
+>    NULL;
+>    +-------+---------+-------+-----------+-------------------+-----------+-------------+
+>    | 1 = 1 | 1 = '1' | 1 = 0 | 'a' = 'a' | (5 + 3) = (2 + 6) | '' = NULL | NULL = NULL |
+>    +-------+---------+-------+-----------+-------------------+-----------+-------------+
+>   	 | 1 	| 1 	| 0		 | 1 		| 1 			| NULL 		| NULL 	|
+>    +-------+---------+-------+-----------+-------------------+-----------+-------------+
+>    1 row in set (0.00 sec)
+>    ```
+>  ```
 > 
-> ```
+>  ```
 >
 > ```
 > 
@@ -658,6 +660,8 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 >
 > ```
 > 
+> ```
+>
 > mysql> SELECT 1 = 2, 0 = 'abc', 1 = 'abc' FROM dual;
 > +-------+-----------+-----------+
 > | 1 = 2 | 0 = 'abc' | 1 = 'abc' |
@@ -666,22 +670,22 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 > +-------+-----------+-----------+
 > 1 row in set, 2 warnings (0.00 sec)
 > ```
->
 > 
->
+> 
+> 
 > ==安全等于运算符==
->
+> 
 > * 与=并无多大区别，主要用于处理null值
->
+> 
 > * ```mysql
->   mysql> SELECT 1 <=> NULL, NULL <=> NULL FROM DUAL;
->   +------------+---------------+
->   | 1 <=> NULL | NULL <=> NULL |
->   +------------+---------------+
->   |          0 |             1 |
->   +------------+---------------+
->   1 row in set (0.00 sec)
->   ```
+> mysql> SELECT 1 <=> NULL, NULL <=> NULL FROM DUAL;
+> +------------+---------------+
+> | 1 <=> NULL | NULL <=> NULL |
+> +------------+---------------+
+> |          0 |             1 |
+> +------------+---------------+
+> 1 row in set (0.00 sec)
+> ```
 > ```
 > 
 > ```
@@ -709,8 +713,8 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 > SELECT last_name,salary,commission_pct
 > FROM employees
 > WHERE ISNULL(commission_pct);
->
->
+> 
+> 
 > #练习：查询表中commission_pct不为null的数据有哪些
 > SELECT last_name,salary,commission_pct
 > FROM employees
@@ -719,8 +723,8 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 > SELECT last_name,salary,commission_pct
 > FROM employees
 > WHERE NOT commission_pct <=> NULL;
->
->
+> 
+> 
 > #② LEAST() \ GREATEST 
 > SELECT LEAST('g','b','t','m'),GREATEST('g','b','t','m') FROM DUAL;
 > +------------------------+---------------------------+
@@ -729,54 +733,54 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 > | b                      | t                         |
 > +------------------------+---------------------------+
 > 1 row in set (0.00 sec)
->
 > 
->
+> 
+> 
 > #③ BETWEEN 条件下界1 AND 条件上界2  （查询条件1和条件2范围内的数据，包含边界）
 > #查询工资在6000 到 8000的员工信息
 > SELECT employee_id,last_name,salary
 > FROM employees
 > #where salary between 6000 and 8000;
 > WHERE salary >= 6000 && salary <= 8000;
->
+> 
 > #交换6000 和 8000之后，查询不到数据
 > SELECT employee_id,last_name,salary
 > FROM employees
 > WHERE salary BETWEEN 8000 AND 6000;
->
+> 
 > #查询工资不在6000 到 8000的员工信息
 > SELECT employee_id,last_name,salary
 > FROM employees
 > WHERE salary NOT BETWEEN 6000 AND 8000;
 > #where salary < 6000 or salary > 8000;
->
 > 
->
+> 
+> 
 > #④ in (set)\ not in (set)
 > #练习：查询部门为10,20,30部门的员工信息
 > SELECT last_name,salary,department_id
 > FROM employees
 > #where department_id = 10 or department_id = 20 or department_id = 30;
 > WHERE department_id IN (10,20,30);
->
+> 
 > #练习：查询工资不是6000,7000,8000的员工信息
 > SELECT last_name,salary,department_id
 > FROM employees
 > WHERE salary NOT IN (6000,7000,8000);
->
->
+> 
+> 
 > #⑤ LIKE :模糊查询
 > # % : 代表不确定个数的字符 （0个，1个，或多个）
 > #练习：查询last_name中包含字符'a'的员工信息
 > SELECT last_name
 > FROM employees
 > WHERE last_name LIKE '%a%';
->
+> 
 > #练习：查询last_name中以字符'a'开头的员工信息
 > SELECT last_name
 > FROM employees
 > WHERE last_name LIKE 'a%';
->
+> 
 > #练习：查询last_name中包含字符'a'且包含字符'e'的员工信息
 > #写法1：
 > SELECT last_name
@@ -786,34 +790,36 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 > SELECT last_name
 > FROM employees
 > WHERE last_name LIKE '%a%e%' OR last_name LIKE '%e%a%';
->
+> 
 > # _ ：代表一个不确定的字符
 > #练习：查询第3个字符是'a'的员工信息
 > SELECT last_name
 > FROM employees
 > WHERE last_name LIKE '__a%';
->
+> 
 > #练习：查询第2个字符是_且第3个字符是'a'的员工信息
 > #需要使用转义字符: \ 
 > SELECT last_name
 > FROM employees
 > WHERE last_name LIKE '_\_a%';
->
+> 
 > #或者  (了解)
 > SELECT last_name
 > FROM employees
 > WHERE last_name LIKE '_$_a%' ESCAPE '$';	#把$当作分隔符
->
->
+> 
+> 
 > #⑥ REGEXP \ RLIKE :正则表达式
 > SELECT 'shkstart' REGEXP '^shk', 'shkstart' REGEXP 't$', 'shkstart' REGEXP 'hk' FROM DUAL;
 > SELECT 'atguigu' REGEXP 'gu.gu','atguigu' REGEXP '[ab]' FROM DUAL;
+> 
+> 
+> ```
+>
+> 
 >
 >
 > ```
-> 
-> 
-> 
 > 
 > ```
 >
@@ -5425,6 +5431,14 @@ DROP PROCEDURE IF EXISTS show_min_salary;
 > * 会话系统变量仅针对于当前会话（连接）有效。会话期间，当前会话对某个会话系统变量值的修改，不会影响其他会话同一个会话系统变量的值。
 >
 > 会话1对某个全局系统变量值的修改会导致会话2中同一个全局系统变量值的修改。
+>
+> 注：MySQL8.0开始支持全局变量的持久化，语法如下：
+>
+> ```mysql
+> SET PERSIST global max_connections = 1000;
+> ```
+>
+> 
 
 > 在MySQL中
 >
@@ -5486,6 +5500,14 @@ SELECT @@character_set_client;
 > 方式1：修改MySQL 配置文件 ，继而修改MySQL系统变量的值（该方法需要重启MySQL服务）
 >
 > 方式2：在MySQL服务运行期间，使用“set”命令重新设置系统变量的值
+>
+> 注：MySQL8.0开始支持全局变量的持久化，语法如下：
+>
+> ```mysql
+> SET PERSIST global max_connections = 1000;
+> ```
+>
+> 
 
 ```mysql
 #1.4 修改系统变量的值
@@ -6561,6 +6583,1015 @@ SELECT AVG(salary)
 FROM employees;
 ```
 
+#### 跳转语句之LEAVE语句
+
+> 可以用在循环语句内，或者以 BEGIN 和 END 包裹起来的程序体内，表示跳出循环或者跳出程序体的操作。
+>
+> 类似goto
+
+##### 语法
+
+```mysql
+LEAVE 标记名
+```
+
+##### 示例
+
+```mysql
+#5.1 LEAVE的使用
+/*
+**举例1：**创建存储过程 “leave_begin()”，声明INT类型的IN参数num。给BEGIN...END加标记名，
+并在BEGIN...END中使用IF语句判断num参数的值。
+
+- 如果num<=0，则使用LEAVE语句退出BEGIN...END；
+- 如果num=1，则查询“employees”表的平均薪资；
+- 如果num=2，则查询“employees”表的最低薪资；
+- 如果num>2，则查询“employees”表的最高薪资。
+
+IF语句结束后查询“employees”表的总人数。
+
+*/
+
+DELIMITER //
+
+CREATE PROCEDURE leave_begin(IN num INT)
+
+begin_label:
+BEGIN
+    IF num <= 0
+    THEN
+        LEAVE begin_label;
+    ELSEIF num = 1
+    THEN
+        SELECT AVG(salary) FROM employees;
+    ELSEIF num = 2
+    THEN
+        SELECT MIN(salary) FROM employees;
+    ELSE
+        SELECT MAX(salary) FROM employees;
+    END IF;
+
+    #查询总人数
+    SELECT COUNT(*) FROM employees;
+
+END //
+
+DELIMITER ;
+
+#调用
+CALL leave_begin(1);
+
+
+#举例2：当市场环境不好时，公司为了渡过难关，决定暂时降低大家的薪资。
+#声明存储过程“leave_while()”，声明OUT参数num，输出循环次数，存储过程中使用WHILE
+#循环给大家降低薪资为原来薪资的90%，直到全公司的平均薪资小于等于10000，并统计循环次数。
+
+DELIMITER //
+CREATE PROCEDURE leave_while(OUT num INT)
+
+BEGIN
+    #
+    DECLARE avg_sal DOUBLE;#记录平均工资
+    DECLARE while_count INT DEFAULT 0; #记录循环次数
+
+    SELECT AVG(salary) INTO avg_sal FROM employees; #① 初始化条件
+
+    while_label:
+    WHILE TRUE
+        DO #② 循环条件
+
+            #③ 循环体
+            IF avg_sal <= 10000 THEN
+                LEAVE while_label;
+            END IF;
+
+            UPDATE employees SET salary = salary * 0.9;
+            SET while_count = while_count + 1;
+
+            #④ 迭代条件
+            SELECT AVG(salary) INTO avg_sal FROM employees;
+
+        END WHILE;
+
+    #赋值
+    SET num = while_count;
+
+END //
+
+DELIMITER ;
+
+#调用
+CALL leave_while(@num);
+SELECT @num;
+
+SELECT AVG(salary)
+FROM employees;
+```
+
+#### 跳转语句之ITERATE语句
+
+> 只能用在循环语句（LOOP、REPEAT和WHILE语句）内，表示重新开始循环，将执行顺序转到语句段开头处。
+>
+> 可以理解为continue
+
+##### 语法
+
+```mysql
+ITERATE label
+```
+
+##### 示例
+
+```mysql
+#5.2 ITERATE的使用
+/*
+举例： 定义局部变量num，初始值为0。循环结构中执行num + 1操作。
+
+- 如果num < 10，则继续执行循环；
+- 如果num > 15，则退出循环结构；
+
+*/
+
+DELIMITER //
+
+CREATE PROCEDURE test_iterate()
+
+BEGIN
+    DECLARE num INT DEFAULT 0;
+
+    loop_label:
+    LOOP
+        #赋值
+        SET num = num + 1;
+
+        IF num < 10
+        THEN
+            ITERATE loop_label;
+        ELSEIF num > 15
+        THEN
+            LEAVE loop_label;
+        END IF;
+
+        SELECT '永远相信美好的事情即将发生';
+
+    END LOOP;
+
+END //
+
+DELIMITER ;
+
+CALL test_iterate();
+
+
+SELECT *
+FROM employees;
+```
+
+
+
+### 游标
+
+> 游标可以像指针一样，随意定位到结果中的一条记录。
+>
+> 游标让 SQL 这种面向集合的语言有了面向过程开发的能力。
+>
+> ​		在使用游标的过程中，会对数据行进行**加锁** ，这样在业务并发量大的时候，不仅会影响业务之间的效率，还会 消耗系统资源 ，造成内存不足，这是因为游标是在内存中进行的处理。
+
+#### 游标的使用步骤
+
+##### 声明游标
+
+```mysql
+DECLARE cursor_name CURSOR FOR select_statement;	#select_statement代表查询语句
+```
+
+如：
+
+```mysql
+DECLARE cur_emp CURSOR FOR
+SELECT employee_id,salary FROM employees;
+
+DECLARE cursor_fruit CURSOR FOR
+SELECT f_name, f_price FROM fruits ;
+```
+
+##### 打开游标
+
+```mysql
+OPEN cursor_name
+```
+
+##### 使用游标（从游标中取得数据）
+
+语法
+
+> 可以理解为游标中有一个指针，指向下一条数据。
+
+```mysql
+#这句的作用是使用 cursor_name 这个游标来读取当前行，并且将数据保存到 var_name 这个变量中
+#游标指针指到下一行。
+FETCH cursor_name INTO var_name [, var_name] ...		#游标有多个列，INTO之后就必须有对应数量的变量
+```
+
+##### 关闭游标
+
+```mysql
+CLOSE cursor_name
+#因为游标会占用系统资源 ，如果不及时关闭，游标会一直保持到存储过程结束，影响系统运行的效率。
+#关闭游标之后，我们就不能再检索查询结果中的数据行，如果需要检索只能再次打开游标
+```
+
+#### 示例
+
+```mysql
+#6. 游标的使用
+/*
+游标使用的步骤：
+① 声明游标
+② 打开游标
+③ 使用游标（从游标中获取数据）
+④ 关闭游标
+
+
+*/
+
+#举例：创建存储过程“get_count_by_limit_total_salary()”，声明IN参数 limit_total_salary，
+#DOUBLE类型；声明OUT参数total_count，INT类型。函数的功能可以实现累加薪资最高的几个员工的薪资值，
+#直到薪资总和达到limit_total_salary参数的值，返回累加的人数给total_count。
+
+DELIMITER //
+
+CREATE PROCEDURE get_count_by_limit_total_salary(IN limit_total_salary DOUBLE, OUT total_count INT)
+BEGIN
+
+    #声明局部变量
+    DECLARE sum_sal DOUBLE DEFAULT 0.0; #记录累加的工资总额
+    DECLARE emp_sal DOUBLE; #记录每一个员工的工资
+    DECLARE emp_count INT DEFAULT 0;
+    #记录累加的人数
+
+
+    #1.声明游标
+    DECLARE emp_cursor CURSOR FOR SELECT salary FROM employees ORDER BY salary DESC;
+
+    #2.打开游标
+    OPEN emp_cursor;
+
+    REPEAT
+
+        #3.使用游标
+        FETCH emp_cursor INTO emp_sal;
+
+        SET sum_sal = sum_sal + emp_sal;
+        SET emp_count = emp_count + 1;
+    UNTIL sum_sal >= limit_total_salary
+        END REPEAT;
+
+    SET total_count = emp_count;
+
+    #4.关闭游标
+    CLOSE emp_cursor;
+
+END //
+
+
+DELIMITER ;
+
+#调用
+CALL get_count_by_limit_total_salary(200000, @total_count);
+SELECT @total_count;
+```
+
+
+
+### 示例
+
+```mysql
+#3. 创建存储过程insert_data(),传入参数为 IN 的 INT 类型变量 insert_count,实现向admin表中
+#批量插入insert_count条记录
+
+CREATE TABLE admin(
+id INT PRIMARY KEY AUTO_INCREMENT,
+user_name VARCHAR(25) NOT NULL,
+user_pwd VARCHAR(35) NOT NULL
+);
+
+SELECT * FROM admin;
+
+DELIMITER $
+
+CREATE PROCEDURE insert_data(IN insert_count INT)
+
+BEGIN
+	#声明变量
+	DECLARE init_count INT DEFAULT 1; #①初始化条件
+	
+	WHILE init_count <= insert_count DO #② 循环条件
+		#③ 循环体
+		INSERT INTO admin(user_name,user_pwd) VALUES (CONCAT('atguigu-',init_count),ROUND(RAND()*1000000));
+		#④ 迭代条件
+		SET init_count = init_count + 1;
+	END WHILE;
+
+END $
+
+
+DELIMITER ;
+
+#调用
+CALL insert_data(100);
+```
+
+```mysql
+#3. 游标的使用
+
+#创建存储过程update_salary()，参数1为 IN 的INT型变量dept_id，表示部门id；
+#参数2为 IN的INT型变量change_sal_count，表示要调整薪资的员工个数。查询指定id部门的员工信息，
+#按照salary升序排列，根据hire_date的情况，调整前change_sal_count个员工的薪资，详情如下。
+
+DELIMITER $
+
+CREATE PROCEDURE update_salary(IN dept_id INT,IN change_sal_count INT)
+BEGIN
+	#声明变量
+	DECLARE emp_id INT ;#记录员工id
+	DECLARE emp_hire_date DATE; #记录员工入职时间
+	
+	DECLARE init_count INT DEFAULT 1; #用于表示循环结构的初始化条件
+	DECLARE add_sal_rate DOUBLE ; #记录涨薪的比例
+	
+	#声明游标
+	DECLARE emp_cursor CURSOR FOR SELECT employee_id,hire_date FROM employees 
+	WHERE department_id = dept_id ORDER BY salary ASC;
+	
+	#打开游标
+	OPEN emp_cursor;
+	
+	WHILE init_count <= change_sal_count DO
+
+		#使用游标
+		FETCH emp_cursor INTO emp_id,emp_hire_date;
+		
+		#获取涨薪的比例
+		IF (YEAR(emp_hire_date) < 1995)
+			THEN SET add_sal_rate = 1.2;
+		ELSEIF(YEAR(emp_hire_date) <= 1998)
+			THEN SET add_sal_rate = 1.15;
+		ELSEIF(YEAR(emp_hire_date) <= 2001)
+			THEN SET add_sal_rate = 1.10;
+		ELSE
+			SET add_sal_rate = 1.05;
+		END IF;
+		
+		#涨薪操作
+		UPDATE employees SET salary = salary * add_sal_rate
+		WHERE employee_id = emp_id;
+		
+		#迭代条件的更新
+		SET init_count = init_count + 1;
+	
+	END WHILE;
+	
+	#关闭游标
+	CLOSE emp_cursor;
+
+END $
+
+
+DELIMITER ;
+
+
+#调用
+CALL update_salary(50,3);
+
+
+SELECT employee_id,hire_date,salary
+FROM employees
+WHERE department_id = 50
+ORDER BY salary ASC;
+
+```
+
+
+
+## 触发器
+
+> MySQL从 5.0.2 版本开始支持触发器。
+>
+> MySQL的触发器和存储过程一样，都是嵌入到MySQL服务器的一段程序。
+
+> 触发器是由 事件来触发 某个操作，这些事件包括 INSERT 、 UPDATE 、 DELETE 事件。
+> 当数据库执行这些语句时候，就相当于事件发生了，就会 自动 激发触发器执行相应的操作。
+
+### 触发器的创建
+
+#### 创建语法
+
+```mysql
+CREATE TRIGGER 触发器名称
+{BEFORE|AFTER} {INSERT|UPDATE|DELETE} ON 表名
+FOR EACH ROW
+触发器执行的语句块;
+```
+
+> * `表名` ：表示触发器监控的对象。
+> * `BEFORE|AFTER` ：表示触发的时间。BEFORE 表示在事件之前触发；AFTER 表示在事件之后触发。
+> * `INSERT|UPDATE|DELETE` ：表示触发的事件。
+> * `触发器执行的语句块`：可以是单条SQL语句，也可以是由BEGIN…END结构组成的复合语句块。
+
+#### 示例
+
+```mysql
+#举例1：
+#① 创建数据表
+
+CREATE TABLE test_trigger
+(
+    id     INT PRIMARY KEY AUTO_INCREMENT,
+    t_note VARCHAR(30)
+);
+
+
+CREATE TABLE test_trigger_log
+(
+    id    INT PRIMARY KEY AUTO_INCREMENT,
+    t_log VARCHAR(30)
+);
+
+#② 查看表数据
+SELECT *
+FROM test_trigger;
+
+SELECT *
+FROM test_trigger_log;
+
+#③ 创建触发器
+#创建名称为before_insert_test_tri的触发器，向test_trigger数据表插入数据之前，
+#向test_trigger_log数据表中插入before_insert的日志信息。
+
+DELIMITER //
+
+CREATE TRIGGER before_insert_test_tri
+    BEFORE INSERT
+    ON test_trigger
+    FOR EACH ROW
+BEGIN
+    INSERT INTO test_trigger_log(t_log)
+    VALUES ('before insert...');
+END //
+
+DELIMITER ;
+
+#④ 测试
+INSERT INTO test_trigger(t_note)
+VALUES ('Tom...');
+
+
+SELECT *
+FROM test_trigger;
+
+SELECT *
+FROM test_trigger_log;
+```
+
+```mysql
+#举例2：
+#创建名称为after_insert_test_tri的触发器，向test_trigger数据表插入数据之后，
+#向test_trigger_log数据表中插入after_insert的日志信息。
+
+DELIMITER $
+
+CREATE TRIGGER after_insert_test_tri
+    AFTER INSERT
+    ON test_trigger
+    FOR EACH ROW
+BEGIN
+    INSERT INTO test_trigger_log(t_log)
+    VALUES ('after insert...');
+END $
+
+DELIMITER ;
+
+#测试
+INSERT INTO test_trigger(t_note)
+VALUES ('Jerry2...');
+
+SELECT *
+FROM test_trigger;
+
+SELECT *
+FROM test_trigger_log;
+```
+
+```mysql
+#举例3：
+#定义触发器“salary_check_trigger”，基于员工表“employees”的INSERT事件，
+#在INSERT之前检查将要添加的新员工薪资是否大于他领导的薪资，如果大于领导薪资，
+#则报sqlstate_value为'HY000'的错误，从而使得添加失败。
+#创建触发器
+DELIMITER //
+
+CREATE TRIGGER salary_check_trigger
+    BEFORE INSERT
+    ON employees
+    FOR EACH ROW
+BEGIN
+    #查询到要添加的数据的manager的薪资
+    DECLARE mgr_sal DOUBLE;
+
+    SELECT salary
+    INTO mgr_sal
+    FROM employees
+    WHERE employee_id = NEW.manager_id;
+
+    IF NEW.salary > mgr_sal
+    THEN
+        SIGNAL SQLSTATE 'HY000' SET MESSAGE_TEXT = '薪资高于领导薪资错误';
+    END IF;
+
+END //
+
+DELIMITER ;
+
+#测试
+DESC employees;
+
+#添加成功：依然触发了触发器salary_check_trigger的执行
+INSERT INTO employees(employee_id, last_name, email, hire_date, job_id, salary, manager_id)
+VALUES (300, 'Tom', 'tom@126.com', CURDATE(), 'AD_VP', 8000, 103);
+
+#添加失败
+INSERT INTO employees(employee_id, last_name, email, hire_date, job_id, salary, manager_id)
+VALUES (301, 'Tom1', 'tom1@126.com', CURDATE(), 'AD_VP', 10000, 103);
+```
+
+### 查看触发器
+
+```mysql
+#2. 查看触发器
+#① 查看当前数据库的所有触发器的定义
+SHOW TRIGGERS;
+
+#② 方式2：查看当前数据库中某个触发器的定义
+SHOW CREATE TRIGGER salary_check_trigger;
+
+#③ 方式3：从系统库information_schema的TRIGGERS表中查询“salary_check_trigger”触发器的信息。
+SELECT *
+FROM information_schema.TRIGGERS;
+```
+
+### 删除触发器
+
+```mysql
+#3. 删除触发器
+DROP TRIGGER IF EXISTS after_insert_test_tri;
+```
+
+### 触发器的优缺点
+
+> 优点：
+>
+> * 触发器可以确保数据的完整性
+> * 触发器可以帮助我们记录操作日志
+> * 触发器还可以用在操作数据前，对数据进行合法性检查
+>
+> 缺点：
+>
+> * 可能不会想到错误是由触发器导致的
+>
+> 注意，如果在子表中定义了==外键约束==，并且外键指定了ON UPDATE/DELETE CASCADE/SET NULL子句，此时修改父表被引用的键值或删除父表被引用的记录行时，也会引起子表的修改和删除操作，此时基于子表的UPDATE和DELETE语句定义的==触发器并不会被激活==。
+
+### 示例
+
+```mysql
+#3. 创建触发器emps_insert_trigger，每当向emps表中添加一条记录时，同步将这条记录
+#添加到emps_back表中
+
+DELIMITER //
+
+CREATE TRIGGER emps_insert_trigger
+AFTER INSERT ON emps
+FOR EACH ROW
+BEGIN
+	#将新添加到emps表中的记录添加到emps_back表中
+	INSERT INTO emps_back(employee_id,last_name,salary)
+	VALUES(NEW.employee_id,NEW.last_name,NEW.salary);
+END //
+
+DELIMITER ;
+
+#show triggers;
+
+
+#4. 验证触发器是否起作用
+SELECT * FROM emps;
+
+SELECT * FROM emps_back;
+
+INSERT INTO emps(employee_id,last_name,salary)
+VALUES(301,'Tom1',3600);
+
+```
+
+```mysql
+#3. 创建触发器emps_del_trigger，每当向emps表中删除一条记录时，同步将删除的这条记录添加到emps_back1表中
+
+DELIMITER //
+
+CREATE TRIGGER emps_del_trigger
+BEFORE DELETE ON emps
+FOR EACH ROW
+BEGIN
+	#将emps表中删除的记录，添加到emps_back1表中。
+	INSERT INTO emps_back1(employee_id,last_name,salary)
+	VALUES(OLD.employee_id,OLD.last_name,OLD.salary);
+END //
+
+DELIMITER ;
+
+
+#4. 验证触发器是否起作用
+
+DELETE FROM emps
+WHERE employee_id = 101;
+
+
+DELETE FROM emps;
+
+SELECT * FROM emps;
+
+
+SELECT * FROM emps_back1;
+```
+
+
+
+## 窗口函数（MySQL8）
+
+> MySQL8开始支持
+> https://dev.mysql.com/doc/refman/8.0/en/window-function-descriptions.html#function_row-number
+>
+> 在这种需要用到分组统计的结果对每一条记录进行计算的场景下，使用窗口函数更好。
+> 换句话说：==窗口函数，会将分组统计的结果作用与每一行！==
+> 一个开窗函数，在查询结果中表现为一列。
+>
+> 窗口函数可以分为`静态窗口函数`和`动态窗口函数 `。
+> 	静态窗口函数的窗口大小是固定的，不会因为记录的不同而不同；
+> 	动态窗口函数的窗口大小会随着记录的不同而变化。
+>
+> ![1697470275300](MySQL.assets/1697470275300.png)
+
+### 语法结构
+
+```mysql
+函数 OVER（[PARTITION BY 字段名 ORDER BY 字段名 ASC|DESC]）
+#或
+函数 OVER 窗口名 … WINDOW 窗口名 AS （[PARTITION BY 字段名 ORDER BY 字段名 ASC|DESC]）
+```
+
+> * OVER 关键字指定函数窗口的范围。
+>   * 如果省略后面括号中的内容，则窗口会包含满足WHERE条件的所有记录，窗口函数会基于所有满足WHERE条件的记录进行计算。
+>   * 如果OVER关键字后面的括号不为空，则可以使用如下语法设置窗口。
+> * 窗口名：为窗口设置一个别名，用来标识窗口。
+> * PARTITION BY子句：指定窗口函数按照哪些字段进行分组。分组后，窗口函数可以在每个分组中分别执行。
+> * ORDER BY子句：指定窗口函数按照哪些字段进行排序。执行排序操作使窗口函数按照排序后的数据记录的顺序进行编号。
+> * FRAME子句：为分区中的某个子集定义规则，可以用来作为滑动窗口使用。
+
+### 常用窗口函数
+
+#### 演示数据
+
+```mysql
+CREATE TABLE goods
+(
+    id          INT PRIMARY KEY AUTO_INCREMENT,
+    category_id INT,
+    category    VARCHAR(15),
+    NAME        VARCHAR(30),
+    price       DECIMAL(10, 2),
+    stock       INT,
+    upper_time  DATETIME
+);
+
+
+INSERT INTO goods(category_id, category, NAME, price, stock, upper_time)
+VALUES (1, '女装/女士精品', 'T恤', 39.90, 1000, '2020-11-10 00:00:00'),
+       (1, '女装/女士精品', '连衣裙', 79.90, 2500, '2020-11-10 00:00:00'),
+       (1, '女装/女士精品', '卫衣', 89.90, 1500, '2020-11-10 00:00:00'),
+       (1, '女装/女士精品', '牛仔裤', 89.90, 3500, '2020-11-10 00:00:00'),
+       (1, '女装/女士精品', '百褶裙', 29.90, 500, '2020-11-10 00:00:00'),
+       (1, '女装/女士精品', '呢绒外套', 399.90, 1200, '2020-11-10 00:00:00'),
+       (2, '户外运动', '自行车', 399.90, 1000, '2020-11-10 00:00:00'),
+       (2, '户外运动', '山地自行车', 1399.90, 2500, '2020-11-10 00:00:00'),
+       (2, '户外运动', '登山杖', 59.90, 1500, '2020-11-10 00:00:00'),
+       (2, '户外运动', '骑行装备', 399.90, 3500, '2020-11-10 00:00:00'),
+       (2, '户外运动', '运动外套', 799.90, 500, '2020-11-10 00:00:00'),
+       (2, '户外运动', '滑板', 499.90, 1200, '2020-11-10 00:00:00');
+```
+
+#### 序号函数
+
+##### ROW_NUMBER()函数
+
+> 对当前窗口内的数据添加序号： 1、2、3、4、5、6......
+
+```mysql
+#查询 goods 数据表中每个商品分类下价格降序排列的各个商品信息
+SELECT ROW_NUMBER() OVER (PARTITION BY category_id ORDER BY price DESC) AS row_num,
+       id,
+       category_id,
+       category,
+       NAME,
+       price,
+       stock
+FROM goods;
+```
+
+![1697471271199](MySQL.assets/1697471271199.png)
+
+```mysql
+#查询 goods 数据表中每个商品分类下价格最高的3种商品信息。
+SELECT *
+FROM (
+         SELECT ROW_NUMBER() OVER (PARTITION BY category_id ORDER BY price DESC) AS
+                    row_num,
+                id,
+                category_id,
+                category,
+                NAME,
+                price,
+                stock
+         FROM goods) t
+WHERE row_num <= 3;
+```
+
+![1697471499897](MySQL.assets/1697471499897.png)
+
+##### RANK()函数
+
+> 使用RANK()函数能够对序号进行==并列排序==，并且会跳过重复的序号，比如序号为1、1、3。
+
+```mysql
+SELECT RANK() OVER (PARTITION BY category_id ORDER BY price DESC) AS row_num,
+       id,
+       category_id,
+       category,
+       NAME,
+       price,
+       stock
+FROM goods;
+```
+
+![1697471686377](MySQL.assets/1697471686377.png)
+
+##### DENSE_RANK()函数
+
+> ENSE_RANK()函数对序号进行==并列排序==，并且==不会跳过重复的序号==，比如序号为1、1、2。
+
+```mysql
+SELECT *
+FROM (
+         SELECT DENSE_RANK() OVER (PARTITION BY category_id ORDER BY price DESC) AS
+                    row_num,
+                id,
+                category_id,
+                category,
+                NAME,
+                price,
+                stock
+         FROM goods) t
+WHERE category_id = 1
+  AND row_num <= 3;
+```
+
+![1697471858890](MySQL.assets/1697471858890.png)
+
+#### 分布函数
+
+##### PERCENT_RANK()函数
+
+> PERCENT_RANK()函数是等级值百分比函数。按照如下方式进行计算。
+>
+> 注意：是在当前窗口内
+>
+> ```mysql
+> (rank - 1) / (rows - 1)
+> ```
+>
+> 其中，rank的值为使用RANK()函数产生的序号，rows的值为当前窗口的总记录数。
+
+```mysql
+#   rows -1  = 6 - 1 = 5  
+#写法一：
+SELECT RANK() OVER (PARTITION BY category_id ORDER BY price DESC)         AS r,
+       PERCENT_RANK() OVER (PARTITION BY category_id ORDER BY price DESC) AS pr,
+       id,
+       category_id,
+       category,
+       NAME,
+       price,
+       stock
+FROM goods
+WHERE category_id = 1;
+#写法二：
+SELECT RANK() OVER w         AS r,
+       PERCENT_RANK() OVER w AS pr,
+       id,
+       category_id,
+       category,
+       NAME,
+       price,
+       stock
+FROM goods
+WHERE category_id = 1 WINDOW w AS (PARTITION BY category_id ORDER BY price
+    DESC);
+```
+
+![1697472125538](MySQL.assets/1697472125538.png)
+
+##### CUME_DIST()函数
+
+> CUME_DIST()为     当前窗口内  ==组内前面的行数（包含本行）/分组后本组的总行数==
+>
+> CUME_DIST()函数主要用于查询小于或等于某个值的比例。
+
+```mysql
+#查询goods数据表中小于或等于当前价格的比例。
+# CUME_DIST()   组内前面的行数（包含本行）/ 分组后本组的总行数
+SELECT CUME_DIST() OVER (PARTITION BY category_id ORDER BY price ASC) AS cd,
+       id,
+       category,
+       NAME,
+       price
+FROM goods;
+```
+
+![1697472753673](MySQL.assets/1697472753673.png)
+
+#### 前后函数
+
+##### LAG(expr,n)函数
+
+> LAG(expr,n)函数返回当前窗口内，当前行的前n行的expr的值。
+
+```mysql
+#查询goods数据表中前一个商品价格与当前商品价格的差值。
+SELECT id, category, NAME, price, pre_price, price - pre_price AS diff_price
+FROM (
+         SELECT id, category, NAME, price, LAG(price, 1) OVER w AS pre_price
+         FROM goods
+             WINDOW w AS (PARTITION BY category_id ORDER BY price)) t;
+```
+
+![1697473032072](MySQL.assets/1697473032072.png)
+
+##### LEAD(expr,n)函数
+
+> LEAD(expr,n)函数返回当前窗口内当前行的后n行的expr的值。
+
+```mysql
+#查询goods数据表中后一个商品价格与当前商品价格的差值。
+SELECT id,
+       category,
+       NAME,
+       behind_price,
+       price,
+       behind_price - price AS diff_price
+FROM (
+         SELECT id, category, NAME, price, LEAD(price, 1) OVER w AS behind_price
+         FROM goods WINDOW w AS (PARTITION BY category_id ORDER BY price)) t;
+```
+
+![1697473215508](MySQL.assets/1697473215508.png)
+
+#### 首尾函数
+
+##### FIRST_VALUE(expr)函数
+
+> FIRST_VALUE(expr)函数返回当前窗口内第一个expr的值。
+
+```mysql
+SELECT id,
+       category,
+       NAME,
+       price,
+       stock,
+       FIRST_VALUE(price) OVER w AS
+           first_price
+FROM goods WINDOW w AS (PARTITION BY category_id ORDER BY price);
+```
+
+![1697473403917](MySQL.assets/1697473403917.png)
+
+##### LAST_VALUE(expr)函数
+
+> LAST_VALUE(expr)函数返回当前窗口的最后一个expr的值。
+
+```mysql
+SELECT id, category, NAME, price, stock, LAST_VALUE(price) OVER w AS last_price
+FROM goods WINDOW w AS (PARTITION BY category_id ORDER BY price);
+```
+
+![1697473582131](MySQL.assets/1697473582131.png)
+
+#### 其他函数
+
+##### NTH_VALUE(expr,n)函数
+
+> NTH_VALUE(expr,n)函数返回窗口内第n个expr的值。
+
+```mysql
+#NTH_VALUE(expr,n)
+SELECT id,
+       category,
+       NAME,
+       price,
+       NTH_VALUE(price, 2) OVER w AS second_price,
+       NTH_VALUE(price, 3) OVER w AS third_price
+FROM goods WINDOW w AS (PARTITION BY category_id ORDER BY price);
+```
+
+![1697474377940](MySQL.assets/1697474377940.png)
+
+##### NTILE(n)函数
+
+> NTILE(n)函数将分区中的有序数据分为n个桶，记录桶编号。
+
+```mysql
+#将goods表中的商品按照价格分为3组。
+SELECT NTILE(3) OVER w AS nt, id, category, NAME, price
+FROM goods WINDOW w AS (PARTITION BY category_id ORDER BY price);
+```
+
+![1697474552046](MySQL.assets/1697474552046.png)
+
+
+
+## 公用表表达式（MySQL8）
+
+> 公用表表达式（或通用表表达式）简称为CTE（Common Table Expressions）。
+>
+> CTE是一个命名的临时结果集，作用范围是当前语句。
+>
+> 可以考虑代替子查询。
+
+### 普通公用表表达式
+
+```mysql
+WITH CTE名称
+AS （子查询）
+SELECT|DELETE|UPDATE 语句;
+```
+
+```mysql
+WITH emp_dept_id
+         AS (SELECT DISTINCT department_id FROM employees)
+SELECT *
+FROM departments d
+         JOIN emp_dept_id e
+              ON d.department_id = e.department_id;
+```
+
+
+
+### 递归公用表表达式
+
+> 递归公用表表达式由 2 部分组成，分别是种子查询和递归查询，
+>
+> 中间通过关键字 UNION [ALL]进行连接。
+> 这里的种子查询，意思就是获得递归的初始值。这个查询只会运行一次，以创建初始数据集，
+> 之后递归查询会一直执行，直到没有任何新的查询数据产生，递归返回。
+
+```mysql
+WITH RECURSIVE
+CTE名称 AS （子查询）
+SELECT|DELETE|UPDATE 语句;
+```
+
+**案例：**
+
+```mysql
+#案例：针对于我们常用的employees表，包含employee_id，last_name和manager_id三个字段。如果a是b的管理者，那么，我们可以把b叫做a的下属，如果同时b又是c的管理者，那么c就是b的下属，是a的下下属。
+#列出所有具有下下属身份的人员信息。
+WITH RECURSIVE cte
+                   AS
+                   (
+                       -- 种子查询，找到第一代领导
+                       SELECT employee_id, last_name, manager_id, 1 AS n
+                       FROM employees
+                       WHERE employee_id = 100
+                       UNION ALL
+                       -- 递归查询，找出以递归公用表表达式的人为领导的人
+                       SELECT a.employee_id, a.last_name, a.manager_id, n + 1
+                       FROM employees AS a
+                                JOIN cte    #重点在这里
+                                     ON (a.manager_id = cte.employee_id)
+                   )
+SELECT employee_id, last_name
+FROM cte
+WHERE n >= 3;
+```
+
 
 
 # 附录
@@ -6701,6 +7732,20 @@ FROM employees;
 
 > Oracle一直支持。
 > MySQL5.7x不支持，MySQL8.0后才开始支持。
+
+### 游标
+
+> 声明游标
+>
+> ```mysql
+> #MySQL，SQL Server，DB2 和 MariaDB
+> DECLARE cursor_name CURSOR FOR select_statement;
+> 
+> #Oracle 或者 PostgreSQL
+> DECLARE cursor_name CURSOR IS select_statement;
+> ```
+
+
 
 ## 常用SQL技巧
 
@@ -6860,3 +7905,19 @@ FROM employees;
 > 	MySQL5.7 可以使用check约束，但check约束对数据验证没有任何作用。添加数据时，没有任何错误或警告。
 >
 > MySQL 8.0中可以使用check约束了
+
+#### 全局变量持久化
+
+> 从MySQL8.0开始支持全局变量的持久化。
+>
+> ```mysql
+> #例
+> SET PERSIST global max_connections = 1000;
+> ```
+
+
+
+# 还未补全的内容
+
+> * 窗口函数中的滑动窗口（即Frame子句）
+
