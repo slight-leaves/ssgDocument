@@ -25,6 +25,13 @@
 > * [<font color="violet">第16章_变量、流程控制与游标.pdf</font>](./相关资料/第16章_变量、流程控制与游标.pdf)
 > * [<font color="violet">第17章_触发器.pdf</font>](./相关资料/第17章_触发器.pdf)
 > * [<font color="violet">第18章_MySQL8其它新特性.pdf</font>](./相关资料/第18章_MySQL8其它新特性.pdf)
+>
+> 下篇
+>
+> * [<font color="violet">第01章_Linux下MySQL的安装与使用.pdf</font>](./相关资料1/第01章_Linux下MySQL的安装与使用.pdf)
+> * [<font color="violet">第02章_MySQL的数据目录.pdf</font>](./相关资料1/第02章_MySQL的数据目录.pdf)
+> * [<font color="violet">第03章_用户与权限管理.pdf</font>](./相关资料1/第03章_用户与权限管理.pdf)
+> * 
 
 ## 数据库概述
 
@@ -178,13 +185,15 @@
 
 ## MySQL安装
 
+### Windows
+
 > 安装详见文档[<font color="violet">第02章_MySQL环境搭建</font>](./相关资料/第02章_MySQL环境搭建.pdf)
 >
 > MySQL配置文件：在`{数据目录}/my.ini`
 >
 > 以下是第二次安装不同版本MySQL的过程
 
-### 再次安装MySQL5.7版本的过程
+#### 再次安装MySQL5.7版本的过程
 
 ![1693499633514](MySQL.assets/1693499633514.png)
 
@@ -234,7 +243,7 @@
 
 若要使用命令行，自行配置环境变量
 
-### 登录相关命令行
+#### 登录相关命令行
 
 **登录**
 
@@ -252,7 +261,7 @@ exit
 quit
 ```
 
-### MySQL5.7编码问题
+#### MySQL5.7编码问题
 
 > 原因：
 > MySQL8.0之后才开始使用utf8
@@ -264,8 +273,8 @@ quit
 
 ```java
 create table student(
-id int,
-name varchar(20) 
+	id int,
+	name varchar(20) 
 );
 ```
 
@@ -350,6 +359,160 @@ mysql> show variables like 'collation_%';
 +----------------------+-----------------+
 3 rows in set, 1 warning (0.00 sec)
 ```
+
+
+
+### Linux
+
+> 详情参考：
+> [<font color="violet">第01章_Linux下MySQL的安装与使用.pdf</font>](./相关资料1/第01章_Linux下MySQL的安装与使用.pdf)
+>
+> 注意：在VMare中克隆虚拟机，需要改动四个地方：mac地址、主机名、ip地址、UUID。
+>
+> 以下仅演示快速安装的过程，注意我的目录与你的目录的区别（CentOS 7 下）
+
+#### MySQL卸载
+
+```shell
+#1. 关闭 mysql 服务
+systemctl stop mysqld.service
+
+#2. 查看当前 mysql 安装状况
+rpm -qa | grep -i mysql
+# 或
+yum list installed | grep mysql
+
+#3. 卸载上述命令查询出的已安装程序			务必卸载干净，反复执行 rpm -qa | grep -i mysql 确认是否有卸载残留
+yum remove mysql-xxx mysql-xxx mysql-xxx mysqk-xxxx
+
+#4. 删除 mysql 相关文件
+#查找相关文件
+find / -name mysql
+#删除上述命令查找出的相关文件
+rm -rf xxx
+
+#5.删除 my.cnf
+rm -rf /etc/my.cnf
+```
+
+#### MySQL安装
+
+> 安装前需要的依赖包（一般系统会自带）
+
+```shell
+#1. 检查/tmp临时目录权限（必不可少）
+chmod -R 777 /tmp
+
+#2. 安装前，检查依赖。 		注：此步骤一般可略过，一般系统装的时候都会有
+rpm -qa | grep libaio
+rpm -qa | grep net-tools
+```
+
+![1697561219048](MySQL.assets/1697561219048.png)
+
+![1697561224780](MySQL.assets/1697561224780.png)
+
+```shell
+#1. 将安装程序拷贝到/opt目录下，顺序安装（必须按照顺序执行）		其他版本少几个包没事，但一定要顺序安装
+rpm -ivh mysql-community-common-8.0.25-1.el7.x86_64.rpm
+rpm -ivh mysql-community-client-plugins-8.0.25-1.el7.x86_64.rpm
+rpm -ivh mysql-community-libs-8.0.25-1.el7.x86_64.rpm
+rpm -ivh mysql-community-client-8.0.25-1.el7.x86_64.rpm
+rpm -ivh mysql-community-server-8.0.25-1.el7.x86_64.rpm
+#中途报错执行		清除之前安装过的依赖即可，，此语可清除mariadb等
+yum remove mysql-libs
+```
+
+```shell
+#2.验证是否安装成功
+#类似java -version
+mysql --version
+#或
+mysqladmin --version
+
+rpm -qa|grep -i mysql
+```
+
+![1697562141234](MySQL.assets/1697562141234.png)
+
+![1697562146514](MySQL.assets/1697562146514.png)
+
+```mysql
+#3.服务的初始化
+mysqld --initialize --user=mysql
+
+#查看初始密码，     root@localhost: 后面就是初始化的密码
+cat /var/log/mysqld.log
+```
+
+![1697562254341](MySQL.assets/1697562254341.png)
+
+```mysql
+#4.启动MySQL，查看状态		加不加.service后缀都可以
+systemctl start mysqld.service		#启动
+systemctl status mysqld.service		#查看状态
+#查看进程
+ps -ef | grep -i mysql
+```
+
+![1697562385900](MySQL.assets/1697562385900.png)
+
+![1697562424663](MySQL.assets/1697562424663.png)
+
+```mysql
+#5.查看MySQL服务是否自启动	默认就是enabled
+systemctl list-unit-files|grep mysqld.service
+
+#根据需要设置是否开机自启
+systemctl enable mysqld.service		#开机自启
+systemctl disable mysqld.service	#开机不自启
+```
+
+```shell
+#6.首次登录
+#查看初始密码，     root@localhost: 后面就是初始化的密码
+cat /var/log/mysqld.log
+#登录输入密码
+mysql -hlocalhost -P3306 -uroot -p
+
+#修改密码		
+ALTER USER 'root'@'%' IDENTIFIED BY 'new_password';
+```
+
+```shell
+#7.关闭防火墙
+service iptables stop		#CentOS7
+#CentOS8
+systemctl status firewalld.service		
+systemctl stop firewalld.service
+```
+
+#### MySQL5.x字符集修改
+
+```mysql
+#1.查看默认使用的字符集
+show variables like 'character%';
+# 或者
+show variables like '%char%';
+
+#2.修改字符集
+vim /etc/my.cnf
+#添加		character_set_server=utf8
+```
+
+![1697565087685](MySQL.assets/1697565087685.png)
+
+#### MySQL8.0远程登录可能出现的问题
+
+![1697563354274](MySQL.assets/1697563354274.png)
+
+```mysql
+#注：这是图形化工具版本过老。
+#现在的加密规则是caching_sha2_password			还原到原来的加密规则mysql_native_password
+ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'abc123';
+```
+
+
 
 ## SQL概述
 
@@ -637,19 +800,15 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 >   * 如果等号两边的值、字符串或表达式中有一个为NULL，则比较结果为NULL。
 >
 >   * ```mysql
->    mysql> SELECT 1 = 1, 1 = '1', 1 = 0, 'a' = 'a', (5 + 3) = (2 + 6), '' = NULL , NULL =
->    NULL;
->    +-------+---------+-------+-----------+-------------------+-----------+-------------+
->    | 1 = 1 | 1 = '1' | 1 = 0 | 'a' = 'a' | (5 + 3) = (2 + 6) | '' = NULL | NULL = NULL |
->    +-------+---------+-------+-----------+-------------------+-----------+-------------+
->   	 | 1 	| 1 	| 0		 | 1 		| 1 			| NULL 		| NULL 	|
->    +-------+---------+-------+-----------+-------------------+-----------+-------------+
->    1 row in set (0.00 sec)
->    ```
->  ```
-> 
->  ```
->
+>     mysql> SELECT 1 = 1, 1 = '1', 1 = 0, 'a' = 'a', (5 + 3) = (2 + 6), '' = NULL , NULL =
+>     NULL;
+>     +-------+---------+-------+-----------+-------------------+-----------+-------------+
+>     | 1 = 1 | 1 = '1' | 1 = 0 | 'a' = 'a' | (5 + 3) = (2 + 6) | '' = NULL | NULL = NULL |
+>     +-------+---------+-------+-----------+-------------------+-----------+-------------+
+>      | 1 	| 1 	| 0		 | 1 		| 1 			| NULL 		| NULL 	|
+>     +-------+---------+-------+-----------+-------------------+-----------+-------------+
+>     1 row in set (0.00 sec)
+>     ```
 > ```
 > 
 > ```
@@ -662,6 +821,12 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 > 
 > ```
 >
+> ```
+> 
+> ```
+>
+> ```
+> 
 > mysql> SELECT 1 = 2, 0 = 'abc', 1 = 'abc' FROM dual;
 > +-------+-----------+-----------+
 > | 1 = 2 | 0 = 'abc' | 1 = 'abc' |
@@ -670,40 +835,42 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 > +-------+-----------+-----------+
 > 1 row in set, 2 warnings (0.00 sec)
 > ```
+>
 > 
-> 
-> 
+>
 > ==安全等于运算符==
-> 
+>
 > * 与=并无多大区别，主要用于处理null值
-> 
+>
 > * ```mysql
-> mysql> SELECT 1 <=> NULL, NULL <=> NULL FROM DUAL;
-> +------------+---------------+
-> | 1 <=> NULL | NULL <=> NULL |
-> +------------+---------------+
-> |          0 |             1 |
-> +------------+---------------+
-> 1 row in set (0.00 sec)
-> ```
+>   mysql> SELECT 1 <=> NULL, NULL <=> NULL FROM DUAL;
+>   +------------+---------------+
+>   | 1 <=> NULL | NULL <=> NULL |
+>   +------------+---------------+
+>   |          0 |             1 |
+>   +------------+---------------+
+>   1 row in set (0.00 sec)
+>   ```
 > ```
 > 
 > ```
 >
 > ```
 > 
-> 
+> ```
+>
+>
 > #练习：查询表中commission_pct为null的数据有哪些
 > SELECT last_name,salary,commission_pct
 > FROM employees
 > WHERE commission_pct <=> NULL;
 > ```
->
 > 
->
+> 
+> 
 > ==非符号运算符==
->
-> ```mysql
+> 
+> ​```mysql
 > #① IS NULL \ IS NOT NULL \ ISNULL
 > #练习：查询表中commission_pct为null的数据有哪些
 > SELECT last_name,salary,commission_pct
@@ -7594,6 +7761,37 @@ WHERE n >= 3;
 
 
 
+## MySQL数据目录
+
+> 详见：[<font color="violet">第02章_MySQL的数据目录.pdf</font>](./相关资料1/第02章_MySQL的数据目录.pdf)
+>
+> /var/lib/mysql/			数据库文件的存放路径
+>
+> /usr/bin（mysqladmin、mysqlbinlog、mysqldump等命令）和/usr/sbin			相关命令目录
+>
+> /usr/share/mysql-8.0（命令及配置文件），/etc/mysql（如my.cnf）					配置文件目录
+
+系统表空间与独立表空间
+
+> * MySQL5.6.6（不包括5.6.6）之前默认的把各个表的数据存储到系统表空间中。
+> * MySQL5.6.6（包括5.6.6）之后，每一个表建立一个独立表空间。
+
+### InnoDB
+
+> MySQL8.0之后`.frm`文件并入`.ibd`文件
+>
+> 注：视图只会存储为   `视图名.frm`文件
+
+![1697565336634](MySQL.assets/1697565336634.png)
+
+![1697565700741](MySQL.assets/1697565700741.png)
+
+### MyISAM
+
+![1697566147525](MySQL.assets/1697566147525.png)
+
+
+
 # 附录
 
 ## 易忘命令
@@ -7632,7 +7830,15 @@ WHERE n >= 3;
 > 11 rows in set (0.00 sec)
 > ```
 >
-> 
+
+### 不用登录进去直接执行SQL
+
+```shell
+#不用登录进去直接执行SQL
+mysql -uroot -p -hlocalhost -P3306 mysql -e "select host,user from user"
+```
+
+详见[<font color="violet">第03章_用户与权限管理.pdf</font>](./相关资料1/第03章_用户与权限管理.pdf)
 
 
 
@@ -7915,7 +8121,35 @@ WHERE n >= 3;
 > SET PERSIST global max_connections = 1000;
 > ```
 
+## SQL大小写规范
 
+> windows系统默认大小写不敏感 ，但是 linux系统是大小写敏感的 。
+>
+> 详见：[<font color="violet">第01章_Linux下MySQL的安装与使用.pdf</font>](./相关资料1/第01章_Linux下MySQL的安装与使用.pdf)
+>
+> MySQL在Linux下数据库名、表名、列名、别名大小写规则是这样的：
+> 1、数据库名、表名、表的别名、变量名是严格区分大小写的；
+> 2、关键字、函数名称在 SQL 中不区分大小写；
+> 3、列名（或字段名）与列的别名（或字段别名）在所有的情况下均是忽略大小写的；
+
+## 宽松模式与严格模式
+
+> 详见：[<font color="violet">第01章_Linux下MySQL的安装与使用.pdf</font>](./相关资料1/第01章_Linux下MySQL的安装与使用.pdf)
+>
+> 常见案例：
+>
+> 向char(10)中插入数据  `1234567890abc`
+> 严格模式会报错。
+> 宽松模式会插入，插入的结果为	`1234567890`
+>
+> 一般会选严格模式。
+> MySQL5.7之后默认为严格模式
+
+## MySQL字符集
+
+> 详见：[<font color="violet">第01章_Linux下MySQL的安装与使用.pdf</font>](./相关资料1/第01章_Linux下MySQL的安装与使用.pdf)
+>
+> MySQL8.0之后才是utf8mb4
 
 # 还未补全的内容
 
