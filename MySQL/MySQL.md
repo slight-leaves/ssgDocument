@@ -28,10 +28,16 @@
 >
 > 下篇
 >
+> * [<font color="violet">总目录1</font>](./相关资料1)
 > * [<font color="violet">第01章_Linux下MySQL的安装与使用.pdf</font>](./相关资料1/第01章_Linux下MySQL的安装与使用.pdf)
 > * [<font color="violet">第02章_MySQL的数据目录.pdf</font>](./相关资料1/第02章_MySQL的数据目录.pdf)
 > * [<font color="violet">第03章_用户与权限管理.pdf</font>](./相关资料1/第03章_用户与权限管理.pdf)
-> * 
+> * [<font color="violet">第04章_逻辑架构.pdf</font>](./相关资料1/第04章_逻辑架构.pdf)
+> * [<font color="violet">第05章_存储引擎.pdf</font>](./相关资料1/第05章_存储引擎.pdf)
+> * [<font color="violet">第06章_索引的数据结构.pdf</font>](./相关资料1/第06章_索引的数据结构.pdf)
+> * [<font color="violet">第08章_索引的创建与设计原则.pdf</font>](./相关资料1/第08章_索引的创建与设计原则.pdf)
+> * [<font color="violet">第09章_性能分析工具的使用.pdf</font>](./相关资料1/第09章_性能分析工具的使用.pdf)
+> * [<font color="violet">第10章_索引优化与查询优化.pdf</font>](./相关资料1/第10章_索引优化与查询优化.pdf)
 
 ## 数据库概述
 
@@ -827,6 +833,14 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 >
 > ```
 > 
+> ```
+>
+> ```
+> 
+> ```
+>
+> ```
+> 
 > mysql> SELECT 1 = 2, 0 = 'abc', 1 = 'abc' FROM dual;
 > +-------+-----------+-----------+
 > | 1 = 2 | 0 = 'abc' | 1 = 'abc' |
@@ -851,6 +865,10 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 >   +------------+---------------+
 >   1 row in set (0.00 sec)
 >   ```
+> ```
+> 
+> ```
+>
 > ```
 > 
 > ```
@@ -985,6 +1003,10 @@ SELECT 12 % 3,12 % 5, 12 MOD -5,-12 % 5,-12 % -5 FROM DUAL;	#符号与被摸数�
 >
 > 
 >
+>
+> ```
+> 
+> ```
 >
 > ```
 > 
@@ -7792,6 +7814,945 @@ WHERE n >= 3;
 
 
 
+### 查看ibd文件
+
+> MySQL8之后，`.frm`文件变为`序列化字典信息(Serialized Dictionary Information,   SDI)`，`SDI`文件写在ibd文件内部。
+
+> 可以通过ibd2sdi工具查看后缀为`.ibd`的文件
+>
+> 这个工具MySQL8版本自带，配好环境在哪里都可以用。
+>
+> ```mysql
+> ibd2sdi --dump-file=student.txt student.ibd
+> ```
+>
+> 此时会生成`--dump-file所指定的文件`
+>
+> ![1697684960504](MySQL.assets/1697684960504.png)
+>
+> ![1697685183373](MySQL.assets/1697685183373.png)
+
+## 用户与权限管理
+
+### 用户管理
+
+> 注：user表是联合主键
+>
+> ![1697687103770](MySQL.assets/1697687103770.png)
+>
+> ![1697698908532](MySQL.assets/1697698908532.png)
+>
+> ![1697698923864](MySQL.assets/1697698923864.png)
+
+#### 创建用户
+
+> ```mysql
+> # []为可选项
+> CREATE USER 用户名 [IDENTIFIED BY '密码'][,用户名 [IDENTIFIED BY '密码']];
+> ```
+>
+> * 用户名由`用户（User）`和`主机名（Host）`构成。
+> * CREATE USER语句可以同时创建多个用户。
+
+```mysql
+#示例
+CREATE USER zhang3 IDENTIFIED BY '123123'; # 默认host是 %
+CREATE USER 'kangshifu'@'localhost' IDENTIFIED BY '123456';
+```
+
+#### 修改用户
+
+> ```mysql
+> UPDATE mysql.user SET USER='li4' WHERE USER='wang5';
+> FLUSH PRIVILEGES;		#必须刷新权限，才能立即生效
+> ```
+>
+> ![1697686656964](MySQL.assets/1697686656964.png)
+
+#### 删除用户
+
+**方式一：使用DROP方式删除（推荐）**
+
+> 使用DROP USER语句来删除用户时，必须拥有DROP USER权限。
+>
+> ```mysql
+> #语法
+> DROP USER user[,user]…;
+> ```
+>
+> 示例：
+>
+> ```mysql
+> DROP USER li4 ; # 默认删除host为%的用户
+> DROP USER 'kangshifu'@'localhost';
+> ```
+
+**方式二：使用DELETE方式删除（不推荐）**
+
+> 注：使用该方式删除，可能会残留权限信息在权限表里。所以不推荐该方式。
+>
+> ```mysql
+> #语法
+> DELETE FROM mysql.user WHERE Host=’hostname’ AND User=’username’;
+> FLUSH PRIVILEGES;		#DML需要使用刷新语句立即生效。
+> ```
+>
+> 示例：
+>
+> ```mysql
+> DELETE FROM mysql.user WHERE Host='localhost' AND User='Emily';
+> FLUSH PRIVILEGES;
+> ```
+
+#### 设置（修改）当前用户密码
+
+> 不推荐该写法！！！！
+>
+> ```mysql
+> # 修改当前用户的密码：（MySQL5.7测试有效）
+> SET PASSWORD = PASSWORD('123456');
+> ```
+
+**方式一：使用ALTER USER命令**
+
+```mysql
+#语法
+ALTER USER USER() IDENTIFIED BY 'new_password';
+```
+
+**方式二：使用SET语句**
+
+```mysql
+#语法
+SET PASSWORD='new_password';
+```
+
+
+
+#### 修改其他用户密码
+
+**方式一：使用ALTER语句**
+
+```mysql
+ALTER USER user [IDENTIFIED BY '新密码']
+[,user[IDENTIFIED BY '新密码']]…;
+```
+
+**方式二：使用SET命令**
+
+```mysql
+SET PASSWORD FOR 'username'@'hostname'='new_password';
+```
+
+**方式三：使用UPDATE语句（不推荐）**
+
+```mysql
+UPDATE MySQL.user SET authentication_string=PASSWORD("123456")
+WHERE User = "username" AND Host = "hostname";
+```
+
+
+
+### 权限管理
+
+#### 权限列表
+
+> MySQL权限分布
+>
+> | 权限分布 | 可能的设置权限                                               |
+> | -------- | ------------------------------------------------------------ |
+> | 表权限   | `SELECT`、`INSERT`、`UPDATE`、`DELETE`、`CREATE`、`DROP`、`GRANT`、`REFERENCES`、`INDEX`、`ALTER` |
+> | 列权限   | `SELECT`、`INSERT`、`UPDATE`、`REFERENCES`                   |
+> | 过程权限 | `EXECUTE`、`ALTER`、`ROUTINE`、`GRANT`                       |
+>
+> 
+>
+> * `CREATE和DROP权限` ，可以创建新的数据库和表，或删除（移掉）已有的数据库和表。
+> * `SELECT、INSERT、UPDATE和DELETE权限`，允许在一个数据库现有的表上实施操作。
+> *  `SELECT权限`
+> * `INDEX权限` 允许创建或删除索引，INDEX适用于已有的表。如果具有某个表的CREATE权限，就可以在CREATE TABLE语句中包括索引定义。
+> *  `ALTER权限` 可以使用ALTER TABLE来更改表的结构和重新命名表。
+> * `CREATE ROUTINE权限` 用来创建保存的程序（函数和程序），ALTER ROUTINE权限用来更改和删除保存的程序， EXECUTE权限 用来执行保存的程序。 
+> *  `GRANT权限` 允许授权给其他用户，可用于数据库、表和保存的程序。 
+> * `FILE权限` 使用户可以使用LOAD DATA INFILE和SELECT ... INTO OUTFILE语句读或写服务器上的文件，任何被授予FILE权限的用户都能读或写MySQL服务器上的任何文件（说明用户可以读任何数据库目录下的文件，因为服务器可以访问这些文件）。
+
+#### 授予权限
+
+> 两种方式：
+>
+> * 把角色赋予用户给用户授权 
+> * 直接给用户授权
+>
+> 授权命令的语法
+>
+> ```mysql
+> #该权限如果发现没有该用户，则会直接新建一个用户。
+> GRANT 权限1,权限2,…权限n ON 数据库名称.表名称 TO 用户名@用户地址 [IDENTIFIED BY ‘密码口令]  [WITH GRANT OPTION];
+> ```
+
+例：
+
+给li4用户用本地命令行方式，授予zfpdb这个库下的所有表的插删改查的权限。
+
+```mysql
+GRANT SELECT,INSERT,DELETE,UPDATE ON zfpdb.* TO li4@localhost ;
+```
+
+授予通过网络方式登录的joe用户 ，对所有库所有表的全部权限，密码设为123。注意这里==唯独不包括grant的权限。==
+
+```mysql
+GRANT ALL PRIVILEGES ON *.* TO joe@'%' IDENTIFIED BY '123';		#此时joe还没有给别人赋权的能力。
+```
+
+> ```mysql
+> GRANT ALL PRIVILEGES ON *.* TO joe@'%' IDENTIFIED BY '123' WITH GRANT OPTION;		#此时joe还没有给别人赋权的能力。
+> ```
+>
+> 
+
+> 相关术语：
+>
+> ==横向的分组==，就是指用户可以接触到的数据的范围，比如可以看到哪些表的数据；
+> ==纵向的分组==，就是指用户对接触到的数据能访问到什么程度，比如能看、能改，甚至是删除。
+
+#### 查看权限
+
+* 查看当前用户权限
+
+```mysql
+SHOW GRANTS;
+# 或
+SHOW GRANTS FOR CURRENT_USER;
+# 或
+SHOW GRANTS FOR CURRENT_USER();
+```
+
+* 查看某用户的全局权限
+
+```mysql
+SHOW GRANTS FOR 'user'@'主机地址' ;
+```
+
+#### 收回权限
+
+> 注意： ==须用户重新登录后才能生效==
+>
+> 使用REVOKE收回权限之后，用户账户的记录将从db、host、tables_priv和columns_priv表中删除
+>
+> 语法：
+>
+> ```mysql
+> REVOKE 权限1,权限2,…权限n ON 数据库名称.表名称 FROM 用户名@用户地址;
+> ```
+
+例：
+
+```mysql
+#收回全库全表的所有权限
+REVOKE ALL PRIVILEGES ON *.* FROM joe@'%';
+
+#收回mysql库下的所有表的插删改查权限
+REVOKE SELECT,INSERT,UPDATE,DELETE ON mysql.* FROM joe@localhost;
+```
+
+> 注：root用户不是一开始就有所有权限。
+>
+> ![1697869574295](MySQL.assets/1697869574295.png)
+>
+> ```mysql
+> #root用户要想撤回别的用户权限先执行
+> GRANT SYSTEM_USER on *.* to 'root'@'%';
+> ```
+
+### 权限表
+
+> MySQL服务器通过权限表来控制用户对数据库的访问，权限表存放再`mysql数据库`中。
+>
+> ==在MySQL启动时，服务器会将这些数据库表中权限信息的内容读入内存。==
+
+| 表名             | 描述                           |
+| ---------------- | ------------------------------ |
+| user             | 用户账号及权限信息             |
+| global_grants    | 动态全局授权                   |
+| db               | 数据库层级的权限               |
+| tables_priv      | 表层级的权限                   |
+| columns_priv     | 列层级的权限                   |
+| procs_priv       | 存储的过程和函数权限           |
+| proxics_priv     | 代理用户的权限                 |
+| default_roles    | 账号连接并认证后默认授予的角色 |
+| role_edges       | 角色子图的边界                 |
+| password_history | 密码更改信息                   |
+
+#### user表
+
+> 详情见：[<font color="violet">第03章_用户与权限管理.pdf</font>](./相关资料1/第03章_用户与权限管理.pdf)
+>
+> Host、User列是联合主键
+>
+> `authentication_string`列用于保存密码，
+>
+> MySQL5.7及之后是叫authentication_string，且加密方式为`SHA1`
+> 之前用于保存密码的列叫password，加密方式为`SHA2`
+
+![1697871477304](MySQL.assets/1697871477304.png)
+
+#### db表
+
+> 数据库级的权限
+>
+> Host、Db、User为联合主键
+
+![1697872460667](MySQL.assets/1697872460667.png)
+
+#### tables_priv表
+
+> 表级的权限
+>
+> Host、Db、User、Table_name为联合主键
+
+![1697872724722](MySQL.assets/1697872724722.png)
+
+#### columns_priv表
+
+> 列级权限
+>
+> Host、Db、User、Table_name、Column_name为联合主键
+
+![1697872854326](MySQL.assets/1697872854326.png)
+
+#### procs_priv表
+
+> 存储过程和存储函数设置操作的权限
+>
+> Host、Db、User、Routine_name、Routine_type为联合主键
+
+![1697873008137](MySQL.assets/1697873008137.png)
+
+### 访问控制
+
+![1697874938365](MySQL.assets/1697874938365.png)
+
+### 角色管理（MySQL8）
+
+![1697875053267](MySQL.assets/1697875053267.png)
+
+#### 创建角色
+
+> 语法：
+>
+> ```mysql
+> #如果 host_name省略，默认为%
+> CREATE ROLE 'role_name'[@'host_name'] [,'role_name'[@'host_name']]... 
+> ```
+>
+> 例
+>
+> ```mysql
+> #创建一个经理的角色
+> CREATE ROLE 'manager'@'localhost';
+> ```
+
+#### 给角色赋予权限
+
+> 语法：
+>
+> ```mysql
+> GRANT privileges ON table_name TO 'role_name'[@'host_name'];
+> #privileges代表权限的名称，多个权限以逗号隔开。
+> SHOW PRIVILEGES\G;			#查询权限名称
+> ```
+>
+> 例：
+>
+> ```mysql
+> #经理角色授予商品信息表、盘点表和应付账款表的只读权限
+> GRANT SELECT ON demo.settlement TO 'manager';
+> GRANT SELECT ON demo.goodsmaster TO 'manager';
+> GRANT SELECT ON demo.invcount TO 'manager';
+> ```
+
+#### 查看角色权限
+
+> 只要你创建了一个角色，系统就会自动给你一个“ `USAGE` ”权限，意思是==连接登录数据库的权限==。
+>
+> ```mysql
+> mysql> SHOW GRANTS FOR 'manager';
+> +-------------------------------------------------------+
+> | Grants for manager@% |
+> +-------------------------------------------------------+
+> | GRANT USAGE ON *.* TO `manager`@`%` |
+> | GRANT SELECT ON `demo`.`goodsmaster` TO `manager`@`%` |
+> | GRANT SELECT ON `demo`.`invcount` TO `manager`@`%` |
+> | GRANT SELECT ON `demo`.`settlement` TO `manager`@`%` |
+> +-------------------------------------------------------+
+> ```
+
+#### 回收角色的权限
+
+> 语法：
+>
+> ```mysql
+> REVOKE privileges ON tablename FROM 'rolename';
+> ```
+>
+> 例：
+>
+> ```mysql
+> REVOKE INSERT, UPDATE, DELETE ON school.* FROM 'school_write';
+> SHOW GRANTS FOR 'school_write';		#查看该角色现有的权限
+> ```
+
+#### 删除角色
+
+> 注意， ==如果你删除了角色，那么用户也就失去了通过这个角色所获得的所有权限==。
+>
+> 语法：
+>
+> ```mysql
+> DROP ROLE role [,role2]...
+> ```
+>
+> 例：
+>
+> ```mysql
+> DROP ROLE 'school_read';
+> ```
+
+#### 给用户赋予角色
+
+> 语法：
+>
+> ```mysql
+> GRANT role [,role2,...] TO user [,user2,...];
+> ```
+>
+> 例：
+>
+> ```mysql
+> GRANT 'school_read' TO 'kangshifu'@'localhost';		#给kangshifu用户添加角色school_read权限
+> SHOW GRANTS FOR 'kangshifu'@'localhost';		#查看是否添加成功
+> ```
+>
+> ```mysql
+> SELECT CURRENT_ROLE();	#使用kangshifu用户登录，然后查询当前角色，如果角色未激活，结果将显示NONE。
+> ```
+>
+> ![1697879846037](MySQL.assets/1697879846037.png)
+
+#### 激活角色
+
+> **方式1：使用set default role 命令激活角色**
+>
+> ```mysql
+> #例：
+> SET DEFAULT ROLE ALL TO 'kangshifu'@'localhost';
+> #例：使用 SET DEFAULT ROLE 为下面4个用户默认激活所有已拥有的角色如下
+> SET DEFAULT ROLE ALL TO
+> 'dev1'@'localhost',
+> 'read_user1'@'localhost',
+> 'read_user2'@'localhost',
+> 'rw_user1'@'localhost';
+> ```
+>
+> **方式2：将activate_all_roles_on_login设置为ON**
+>
+> ```mysql
+> #默认情况
+> mysql> show variables like 'activate_all_roles_on_login';
+> +-----------------------------+-------+
+> | Variable_name | Value |
+> +-----------------------------+-------+
+> | activate_all_roles_on_login | OFF |
+> +-----------------------------+-------+
+> 1 row in set (0.00 sec)
+> 
+> #对 所有角色永久激活 。运行这条语句之后，用户才真正拥有了赋予角色的所有权限。
+> SET GLOBAL activate_all_roles_on_login=ON;
+> ```
+
+#### 撤销用户的角色
+
+> 语法：
+>
+> ```mysql
+> REVOKE role FROM user;
+> ```
+>
+> 例：
+>
+> ```mysql
+> #撤销kangshifu用户的school_read角色
+> REVOKE 'school_read' FROM 'kangshifu'@'localhost';
+> #查看kangshifu用户的角色信息
+> SHOW GRANTS FOR 'kangshifu'@'localhost';
+> ```
+
+#### 强制角色
+
+> 强制角色是给每个创建账户的默认角色，不需要手动设置。强制角色无法被`REVOKE`或者`DROP`
+
+**方式一：服务启动前设置**
+
+```ini
+[mysqld]
+mandatory_roles='role1,role2@localhost,r3@%.atguigu.com'
+```
+
+**方式二：运行时设置**
+
+```mysql
+SET PERSIST mandatory_roles = 'role1,role2@localhost,r3@%.example.com'; #系统重启后仍然有效
+SET GLOBAL mandatory_roles = 'role1,role2@localhost,r3@%.example.com'; #系统重启后失效
+```
+
+## 逻辑架构
+
+### 服务器处理请求
+
+#### 概述
+
+> 概览
+>
+> ![1698054336480](MySQL.assets/1698054336480.png)
+>
+> MySQL5.7适用下图
+>
+> ![1698054478900](MySQL.assets/1698054478900.png)
+
+#### 连接层
+
+>  MySQL 服务器对 `TCP` 传输过来的账号密码做身份认证、权限获取。
+>
+> 用户名密码认证通过，==会从权限表查出账号拥有的权限与连接关联==，之后的权限判断逻辑，都将依赖于此时读到的权限。
+>
+> 每一个连接从线程池中获取线程，省去了创建和销毁线程的开销。
+
+#### 服务层
+
+> * **SQL Interface: SQL接口**：
+>   接收用户的SQL命令，并且返回用户需要查询的结果。
+> * **Parser: 解析器**
+>   * 对 SQL 语句进行语法分析、语义分析。并为其创建`语法树`，并根据数据字典丰富查询语法树。
+>   * 会 验证该客户端是否具有执行该查询的权限 。
+>   * 创建好语法树后，MySQL还会对SQl查询进行语法上的优化，进行查询重写。
+> * **Optimizer: 查询优化器**
+>   * 确定 SQL 语句的执行路径，生成一个`执行计划 `。
+>     表明应该 使用哪些索引 进行查询（全表检索还是使用索引检索），表之间的连接顺序如何。
+>     使用“ 选取-投影-连接 ”策略进行查询：
+>    		 	`WHERE`进行`选取`，过滤行
+>    		 	`SELECT`进行`投影`，过滤列
+>    		 	将上述两者进行连接。
+> * **Caches & Buffers： 查询缓存组件**
+>   * 这个缓存机制是由一系列小缓存组成的。比如表缓存，记录缓存，key缓存，权限缓存等 。
+>   * 这个查询缓存可以在==不同客户端之间共享==。
+>   * 从MySQL 5.7.20开始，不推荐使用查询缓存，并==在MySQL 8.0中删除==。
+
+#### 存储层
+
+> ==真正的负责了MySQL中数据的存储和提取==
+>
+> 查询MySQL支持的引擎
+>
+> ```mysql
+> SHOW ENGINES;
+> ```
+>
+> ![1698055764627](MySQL.assets/1698055764627.png)
+
+查看数据存储的目录
+
+```mysql
+SHOW VARIABLES LIKE '%datadir%';
+```
+
+![1698055958915](MySQL.assets/1698055958915.png)
+
+### SQL执行流程
+
+> ![1698056089977](MySQL.assets/1698056089977.png)
+>
+> 注：查询缓存这一步在MySQL中已经被砍，因为能用的前提是SQL语句一模一样
+>
+> ![1698056214577](MySQL.assets/1698056214577.png)
+>
+> 物理查询优化：通过`索引`和`表连接方式`等技术进行优化。
+> 逻辑查询优化：通过SQL`等价变换`提升查询效率，即换一种查询写法执行效率可能更高。
+
+###  MySQL执行时间分析
+
+> 注：有些图形化界面可能较难看出执行时间，因为其一条语句可能涉及多个参数的设置。
+
+#### 确认profiling是否开启
+
+```mysql
+SELECT @@profiling;
+#或
+SHOW VARIABLES LIKE 'profiling';
+```
+
+![1698068557835](MySQL.assets/1698068557835.png)
+
+![1698068563478](MySQL.assets/1698068563478.png)
+
+```mysql
+SET profiling = 1;	#打开profiling
+```
+
+之后可以查看当前会话中任意SQL的执行情况。
+
+#### 查看profiles
+
+查看当前会话所产生的所有 profiles：
+
+```mysql
+SHOW PROFILES; # 显示最近的几次查询
+```
+
+![1698068939483](MySQL.assets/1698068939483.png)
+
+#### 查看profile
+
+```mysql
+SHOW PROFILE;	#查看最近一次执行情况
+SHOW PROFILE FOR QUERY 1;		#指定查询哪条语句的执行情况，其中1为上述表中的Query_ID字段中的值
+SHOW PROFILE CPU, BLOCK IO FOR QUERY 1;		#查看更详细的执行情况
+```
+
+![1698069620556](MySQL.assets/1698069620556.png)
+
+![1698069631324](MySQL.assets/1698069631324.png)
+
+
+
+### 数据库缓冲池（buffer pool）
+
+> 注：主要介绍的是InnoDB
+>
+> 一个数据页：16KB
+>
+> ![1698073460162](MySQL.assets/1698073460162.png)
+>
+> 缓存在数据库中的结构和作用：
+>
+> ![1698073649410](MySQL.assets/1698073649410.png)
+
+#### 查看缓冲池大小
+
+```mysql
+#查看缓冲池的大小
+SHOW VARIABLES LIKE 'innodb_buffer_pool_size';
+```
+
+![1698073888067](MySQL.assets/1698073888067.png)
+
+此时的缓冲池大小为：134217728/1024/1024=128MB
+
+#### 设置缓冲池大小
+
+```mysql
+SET GLOBAL innodb_buffer_pool_size = 268435456;
+```
+
+![1698074003818](MySQL.assets/1698074003818.png)
+
+或者修改配置文件my.ini
+
+```ini
+[server]
+innodb_buffer_pool_size = 268435456
+```
+
+#### 多个Buffer Pool实例
+
+> 注：每个实例的大小为`innodb_buffer_pool_size`/`innodb_buffer_pool_instances`
+>
+> 注：并不是Buffer Poot实例创建的越多越好，==分别管理各个Buffer Pool也是需要性能开销的==。
+> InnoDB规定：当`innodb_buffer_pool_size`的值小于1G的时候设置多个实例是无效的，InnoDB会默认`innodb_buffer_pool_instances`的值修改为1。而我们鼓励在Buffer Pool大于或等于1G的时候设置多个Buffer Pool实例。
+
+配置文件my.ini
+
+```ini
+[server]
+innodb_buffer_pool_instances = 2
+```
+
+查看缓冲池个数：
+
+```mysql
+SHOW VARIABLES LIKE 'innodb_buffer_pool_instances';
+```
+
+![1698074272712](MySQL.assets/1698074272712.png)
+
+#### Buffer Pool更新流程
+
+![1698074387782](MySQL.assets/1698074387782.png)
+
+如果想想要回滚到更新之前的版本
+
+用`Redo Log` & `Undo Log`
+
+
+
+## 存储引擎
+
+### 查看存储引擎
+
+```mysql
+#查看mysql提供的引擎
+SHOW ENGINES;
+
+#查看默认的存储引擎
+SHOW VARIABLES LIKE '%storage_engine%';
+#或
+SELECT @@default_storage_engine;	#5.5之后默认InnoDB
+```
+
+![1698075005372](MySQL.assets/1698075005372.png)
+
+![1698075113557](MySQL.assets/1698075113557.png)
+
+### 修改默认的存储引擎
+
+```mysql
+SET DEFAULT_STORAGE_ENGINE=MyISAM;
+```
+
+或者修改 my.cnf 文件：
+
+```properties
+default-storage-engine=MyISAM
+
+# 重启服务
+systemctl restart mysqld.service
+```
+
+
+
+### 设置表的存储引擎
+
+#### 创建表时指定存储引擎
+
+```mysql
+CREATE TABLE 表名(
+建表语句;
+) ENGINE = 存储引擎名称;
+```
+
+#### 修改表的存储引擎
+
+```mysql
+ALTER TABLE 表名 ENGINE = 存储引擎名称;
+
+#例：
+ALTER TABLE engine_demo_table ENGINE = InnoDB;
+```
+
+
+
+### 引擎介绍
+
+#### InnoDB 引擎
+
+> 具备外键支持功能的事务存储引擎
+
+> * 大于等于5.5之后，默认采用InnoDB引擎 。
+> * InnoDB是MySQL的==默认事务型引擎==
+> * InnoDB是 为处理巨大数据量的最大性能设计 
+> * InnoDB不仅缓存索引还要缓存真实数据， 对内存要求较高 ，而且内存大小对性能有决定性的影响。
+
+#### MyISAM 引擎
+
+> 主要的非事务处理存储引擎
+
+> * MyISAM 不支持事务、行级锁、外键 ，有一个毫无疑问的缺陷就是崩溃后无法安全恢复。
+> * 5.5之前默认的存储引擎
+> * 针对数据统计有额外的常数存储。故而 count(*) 的查询效率很高
+> * 应用场景：只读应用或者以读为主的业务
+
+#### Archive 引擎
+
+> 用于数据存档
+
+> * archive是归档的意思，仅仅支持插入和查询两种功能（行被插入后不能修改）。
+> * 在MySQL5.5以后支持索引功能
+> * 拥有很好的压缩机制，使用`zlib`压缩库，在记录请求的时候实时的进行压缩经常被用来作为仓库使用。
+> * 创建ARCHIVE表时，存储引擎会创建名称以表名开头的文件。数据文件的扩展名为`.ARZ`。
+> * 同样数据量下，Archive表比MyISAM表要小大约75%，比支持事务处理的InnoDB表小大约83%。
+> * ARCHIVE存储引擎采用了行级锁。该ARCHIVE引擎支持 AUTO_INCREMENT列属性。AUTO_INCREMENT列可以具有唯一索引或非唯一索引。尝试在任何其他列上创建索引会导致错误。
+> * Archive表适合日志和数据采集（档案）类应用;适合存储大量的独立的作为历史记录的数据。拥有很高的插入速度，但是对查询的支持较差。
+
+> **下表展示了ARCHIVE 存储引擎功能**
+>
+> | **特征**                                                | **支持**     |
+> | ------------------------------------------------------- | ------------ |
+> | B树索引                                                 | 不支持       |
+> | 备份/时间点恢复  （在服务器中实现，而不是在存储引擎中） | 支持         |
+> | 集群数据库支持                                          | 不支持       |
+> | 聚集索引                                                | 不支持       |
+> | 压缩数据                                                | 支持         |
+> | 数据缓存                                                | 不支持       |
+> | 加密数据（加密功能在服务器中实现）                      | 支持         |
+> | 外键支持                                                | 不支持       |
+> | 全文检索索引                                            | 不支持       |
+> | 地理空间数据类型支持                                    | 支持         |
+> | 地理空间索引支持                                        | 不支持       |
+> | 哈希索引                                                | 不支持       |
+> | 索引缓存                                                | 不支持       |
+> | 锁粒度                                                  | 行锁         |
+> | MVCC                                                    | 不支持       |
+> | 存储限制                                                | 没有任何限制 |
+> | 交易                                                    | 不支持       |
+> | 更新数据字典的统计信息                                  | 支持         |
+
+#### Blackhole 引擎
+
+> 丢弃写操作，读操作会返回空内容
+
+> 但服务器会记录Blackhole表的日志，所以可以用于复制数据到备库，或者简单地记录到日志。但这种应用方式会碰到很多问题，因此并不推荐。
+
+#### CSV引擎
+
+> 存储数据时，以逗号分隔各个数据项
+
+> 创建CSV表还会创建相应的`元文件`，用于`存储表的状态`和`表中存在的行数`。此文件的名称与表的名称相同，后缀为 CSM 。如图所示
+>
+> ![1698076994432](MySQL.assets/1698076994432.png)
+
+#### Memory 引擎
+
+> 置于内存的表。
+>
+> 响应速度很快 ，但是当mysqld守护进程崩溃的时候 数据会丢失 。另外，要求存储的数据是数据长度不变的格式，比如，Blob和Text类型的数据不可用(长度不固定的)。
+
+> * Memory同时 支持哈希（HASH）索引 和 B+树索引 。
+> * Memory表至少比MyISAM表要 快一个数量级 。
+> * MEMORY 表的大小是受到限制 的。表的大小主要取决于两个参数，分别是`max_rows`和`max_heap_table_size`。其中，`max_rows`可以在创建表时指定；`max_heap_table_size`的大小默认为16MB，可以按需要进行扩大。
+> * 数据文件与索引文件分开存储。
+> * 缺点：其数据易丢失，生命周期短。
+
+#### Federated 引擎
+
+> Federated引擎是访问其他MySQL服务器的一个==代理== ，尽管该引擎看起来提供了一种很好的跨服务器的灵活性 ，但也经常带来问题，因此 ==默认是禁用的== 。
+
+#### Merge引擎
+
+> 管理多个MyISAM表构成的表集合
+
+#### NDB引擎
+
+> MySQL集群专用存储引擎
+>
+> 也叫做 NDB Cluster 存储引擎，主要用于`MySQL Cluster`分布式集群环境，类似于 Oracle 的 RAC 集群。
+
+#### 引擎对比
+
+| **特点**       | **MyISAM**                                                | **InnoDB**                                                   | **MEMORY** | **MERGE** | **NDB** |
+| -------------- | --------------------------------------------------------- | ------------------------------------------------------------ | ---------- | --------- | ------- |
+| 存储限制       | 有                                                        | 64TB                                                         | 有         | 没有      | 有      |
+| 事务安全       |                                                           | 支持                                                         |            |           |         |
+| 锁机制         | 表锁，即使操作一条记录也会锁住整个 表，不适合高并发的操作 | 行锁，操作时只锁某一行，不对其它行有影响，适合高并发的操作   | 表锁       | 表锁      | 行锁    |
+| B树索引        | 支持                                                      | 支持                                                         | 支持       | 支持      | 支持    |
+| 哈希索引       |                                                           |                                                              | 支持       |           | 支持    |
+| 全文索引       | 支持                                                      |                                                              |            |           |         |
+| 集群索引       |                                                           | 支持                                                         |            |           |         |
+| 数据缓存       |                                                           | 支持                                                         | 支持       |           | 支持    |
+| 索引缓存       | 只缓存索引，不缓存真实数据                                | 不仅缓存索引还要缓存真实数据，对内存要求较高，而且内存大小对性能有决定性的影响 | 支持       | 支持      | 支持    |
+| 数据可压缩     | 支持                                                      |                                                              |            |           |         |
+| 空间使用       | 低                                                        | 高                                                           | N/A        | 低        | 低      |
+| 内存使用       | 低                                                        | 高                                                           | 中等       | 低        | 高      |
+| 批量插入的速度 | 高                                                        | 低                                                           | 高         | 高        | 高      |
+| 支持外键       |                                                           | 支持                                                         |            |           |         |
+
+#### MyISAM和InnoDB
+
+| 对比项         | **MyISAM**                                               | **InnoDB**                                                   |
+| -------------- | -------------------------------------------------------- | ------------------------------------------------------------ |
+| 外键           | 不支持                                                   | 支持                                                         |
+| 事务           | 不支持                                                   | 支持                                                         |
+| 行表锁         | 表锁，即使操作一条记录也会锁住整个表，不适合高并发的操作 | 行锁，操作时只锁某一行，不对其它行有影响，适合高并发的操作   |
+| 缓存           | 只缓存索引，不缓存真实数据                               | 不仅缓存索引还要缓存真实数据，对内存要求较高，而且内存大小对性能有决定性的影响 |
+| 自带系统表使用 | Y                                                        | N                                                            |
+| 关注点         | 性能：节省资源、消耗少、简单业务                         | 事务：并发写、事务、更大资源                                 |
+| 默认安装       | Y                                                        | Y                                                            |
+| 默认使用       | N                                                        | Y                                                            |
+
+
+
+## 索引的数据结构
+
+> 索引可以提高查询的速度，但是会影响插入记录的速度。这种情况下，最好的办法是先删除表中的索引，然后插入数据，插入完成后再创建索引。
+
+### 索引结构的设计
+
+> 索引的社交
+>
+> ![1698078690911](MySQL.assets/1698078690911.png)
+>
+> ![1698078725987](MySQL.assets/1698078725987.png)
+>
+> * `record_type` ：记录头信息的一项属性，表示记录的类型。
+>   * 0 表示普通记录
+>   * 1 目录项记录
+>   * 2 表示最小记录
+>   * 3 表示最大记录
+> * `next_record` ：记录头信息的一项属性，表示下一条地址相对于本条记录的地址偏移量
+>
+> 把一些记录放到页里的示意图就是：
+>
+> ![1698078912024](MySQL.assets/1698078912024.png)
+>
+> ==注意指针==：页内单向，页间双向
+
+#### 目录项纪录的页
+
+![1698079189975](MySQL.assets/1698079189975.png)
+
+#### 多个目录项纪录的页
+
+![1698079282008](MySQL.assets/1698079282008.png)
+
+#### 目录项记录页的目录页
+
+![1698079330592](MySQL.assets/1698079330592.png)
+
+#### 抽象为B+Tree
+
+![1698079497550](MySQL.assets/1698079497550.png)
+
+
+
+### 概念
+
+#### 聚簇索引
+
+也可以叫做主键索引
+
+> * MyISAM并不支持聚簇索引
+> * 由于数据物理存储排序方式只能有一种，所以每个MySQL的表只能有一个聚簇索引。一般情况下就是该表的主键。
+> * 如果没有定义主键，Innodb会选择非空的唯一索引代替。如果没有这样的索引，Innodb会隐式的定义一个主键来作为聚簇索引。
+> * 为了充分利用聚簇索引的聚簇的特性，所以innodb表的主键列尽量选用有序的顺序id，而不建议用无序的id,比如UUID、MD5、HASH、字符串列作为主键无法保证数据的顺序增长。
+>
+> 上述索引结构的设计就是一种聚簇索引。
+
+#### 二级索引
+
+又叫辅助索引、非聚簇索引
+
+> ![1698081631028](MySQL.assets/1698081631028.png)
+>
+> 找到叶子结点内一条记录的主键后，还要去`聚簇索引`再找完整的一行记录，这个过程成为`回表`。
+>
+> 注意：二级索引的叶子结点，只有主键和索引键
+>
+> ![1698081852744](MySQL.assets/1698081852744.png)
+
+#### 联合索引
+
+>  以c2和c3列等多个列的大小为排序规则建立的B+树称为`联合索引`
+>
+> 本质上也是一个二级索引。
+
 # 附录
 
 ## 易忘命令
@@ -8151,7 +9112,77 @@ mysql -uroot -p -hlocalhost -P3306 mysql -e "select host,user from user"
 >
 > MySQL8.0之后才是utf8mb4
 
+## MySQL5.7中的Cache
+
+> 注：该选项已被MySQL8移除，不推荐使用。
+>
+> ```properties
+> #query_cache_type有3个值，0代表关闭查询缓存OFF，1代表开启ON，2（DEMAND）
+> query_cache_type=2
+> #值为2时，代表当SQL语句中有SQL_CACHE关键词时才缓存。
+> ```
+>
+> ```mysql
+> #此时只有当使用SQL_CACHE关键词时才走缓存。
+> SELECT SQL_CACHE * FROM test WHERE ID=5;
+> ```
+>
+> ```mysql
+> #查看当前mysql实例是否开启缓存机制。
+> SHOW GLOBAL VARIABLES LIKE '%query_cache_type%';
+> ```
+>
+> ![1698064473076](MySQL.assets/1698064473076.png)
+>
+> ```mysql
+> #监控查询缓存的命中率
+> SHOW STATUS LIKE '%Qcache';
+> ```
+>
+> ![1698064594771](MySQL.assets/1698064594771.png)
+>
+> `Qcache_free_blocks`：表示查询缓存中还有多少剩余的blocks，如果该值显示较大，则说明查询缓存中==内存碎片过多==了，可在一定的时间进行整理。
+>
+> `Qcache_free_memory`：查询缓存的内存大小。
+>
+> `Qcache_hits`：表示有多少条命中缓存。
+
+
+
+## Oracle中的SQL执行流程
+
+![1698069880917](MySQL.assets/1698069880917.png)
+
+> * 语法检查：检查 SQL 拼写是否正确。
+> * 语义检查：检查 SQL 中的访问对象是否存在。如：列名写错。
+> * 权限检查：看用户是否具备访问该数据的权限。
+> * 共享池检查：主要的作用是缓存 SQL 语句和该语句的执行计划。
+>   * Oracle 首先对 SQL 语句进行 Hash 运算 ，然后根据 Hash 值在库缓存（Library Cache）中查找，如果 存在 SQL 语句的执行计划 ，就直接拿来执行，直接进入“执行器”的环节，这就是`软解析`。
+>   * 如果没有找到 SQL 语句和执行计划，Oracle 就需要创建解析树进行解析，生成执行计划，进入“优化器”这个步骤，这就是`硬解析 `。
+> * 优化器：优化器中就是要进行硬解析，也就是决定怎么做，比如创建解析树，生成执行计划。
+> * 执行器：当有了解析树和执行计划之后，就知道了 SQL 该怎么被执行，这样就可以在执行器中执行语句了。
+
+> 共享池详述
+>
+> 共享池包括了库缓存，数据字典缓冲区等。
+>
+> `库缓存区`：主要缓存SQL语句和执行计划。
+> `数据字典缓冲区`：存储的是 Oracle 中的对象定义，比如表、视图、索引等对象。当对 SQL 语句进行解析的时候，如果需要相关的数据，会从数据字典缓冲区中提取。
+>
+> `绑定变量`：在 SQL 语句中使用变量，通过不同的变量取值来改变 SQL 的执行结果。
+> 好处：能 提升软解析的可能性 。
+> 不足之处在于可能会导致生成的执行计划不够优化，因此是否需要绑定变量还需要视情况而定。
+>
+> ```mysql
+> #例：
+> select * from player where player_id = 10001;
+> select * from player where player_id = :player_id;	#绑定变量。
+> ```
+>
+> ![1698073328358](MySQL.assets/1698073328358.png)
+
 # 还未补全的内容
 
 > * 窗口函数中的滑动窗口（即Frame子句）
+> * 原文件[<font color="violet">第03章_用户与权限管理.pdf</font>](./相关资料1/第03章_用户与权限管理.pdf)，缺少配置文件的使用。
 
